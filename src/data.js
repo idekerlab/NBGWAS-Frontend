@@ -2,7 +2,6 @@ const form_data = {
     title: 'NBGWAS Service',
     subheader: 'The network-boosed GWAS package re-prioritizes significant single nucleotide polymorphisms (SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
     github: 'https://github.com/shfong/nbgwas',
-    api: 'http://ec2-35-167-36-71.us-west-2.compute.amazonaws.com:5000/nbgwas',
     uploadType: 'Choose source',
     uploadText: 'Upload CSV File',
     uploadHelp: 'or select a sample',

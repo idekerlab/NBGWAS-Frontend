@@ -1,11 +1,18 @@
+
 const styles = theme => ({
+    root: {
+        display: 'block'
+    },
     card: {
         minWidth: 275,
         maxWidth: '60%',
         padding: 50,
         margin: 'auto',
         marginTop: 30,
-        marginBottom: 30,
+        marginBottom: 30
+    },
+    heading: {
+        fontSize: '15px'
     },
     formControl: {
         display: 'flex',
@@ -15,12 +22,9 @@ const styles = theme => ({
     selectEmpty: {
         marginTop: theme.spacing.unit * 2,
     },
-    textField: {
-
-    },
     button: {
-        margin: 'auto',
-        marginRight: 30
+        float: 'right',
+        margin: '0px 15px'
     },
     input: {
         display: 'none',
@@ -28,6 +32,14 @@ const styles = theme => ({
     grow: {
         flexGrow: 1,
     },
+    networkView: {
+        minHeight: '600px',
+        border: '2px solid black'
+    },
+    buttonBar: {
+        display:'block',
+        paddingTop: '20px',
+    }
 });
 
 export default styles;
