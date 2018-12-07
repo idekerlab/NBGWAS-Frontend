@@ -21,8 +21,8 @@ class Content extends React.Component {
         this.state = {data: null};
     }
 
-    handleRun(formData){
-        console.log(formData);
+    handleData(data){
+        this.setState({data})
     }
 
     render(){
@@ -35,7 +35,7 @@ class Content extends React.Component {
             <Paper style={paperStyle}>
                 {data === null ?
                 <InputForm 
-                    handleRun={this.handleRun}
+                    handleData={this.handleData}
                     />
                 :
                 <Results 

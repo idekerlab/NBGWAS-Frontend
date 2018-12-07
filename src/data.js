@@ -17,7 +17,7 @@ const data = {
     form: {
         ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
         snp_level_summary: '',
-        protein_coding: 'h18',
+        protein_coding: 'hg19',
         alpha: '',
         window: 10000
     }

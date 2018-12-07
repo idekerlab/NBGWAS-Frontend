@@ -1,13 +1,18 @@
 import React from 'react'
-
-import data from '../data'
+import axios from 'axios'
 import { TextField, FormControl, Select, MenuItem, InputLabel,
     Button, CardHeader, ExpansionPanel, ExpansionPanelSummary, 
     Typography } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-
 import Fab from '@material-ui/core/Fab';
+
+import data from '../data'
+
+
+// const ENDPOINT = "localhost:8080/rest/v1/snp_analyzer";
+const ENDPOINT = "http://nbgwas.ucsd.edu/rest/v1/snp_analyzer";
+
 
 const styles = {
     run_button: {
@@ -27,6 +32,9 @@ const styles = {
     },
     advanced_content: {
         padding: '20px'
+    },
+    file_info: {
+        paddingLeft: '30px'
     }
 }
 
@@ -71,6 +79,9 @@ const AdvancedPanel = (props) => {
     )
 }
 
+function formatBytes(a, b) { if (0 === a) return "0 Bytes"; var c = 1024, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], f = Math.floor(Math.log(a) / Math.log(c)); return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f] }
+
+
 class InputForm extends React.Component {
     constructor(props){
         super(props)
@@ -79,6 +90,20 @@ class InputForm extends React.Component {
 
     handleChange = event => {
         this.setState({[event.target.name]: event.target.value})
+    }
+
+    handleRun = () => {
+        const data = this.state;
+        axios.post(ENDPOINT, data).then(
+            res => {
+                console.log(res)
+                this.props.handleData("DATA RETURNED")
+            }
+        )
+    }
+
+    handleFileChange = (file) => {
+        this.setState({snp_level_summary: file})
     }
 
     render(){
@@ -90,7 +115,7 @@ class InputForm extends React.Component {
             alpha
         } = this.state;
         return (
-            <form style={styles.form} onSubmit={this.props.handleRun}>
+            <form style={styles.form}>
                 <CardHeader
                     title={data.title}
                     subheader={data.subheader}/>
@@ -107,11 +132,11 @@ class InputForm extends React.Component {
 
                 <Row>
                     <input
+                        ref={v => {this.file_input = v}}
                         accept="text/*"
                         id="snp_level_summary"
                         style={styles.snp_input}
-                        value={snp_level_summary}
-                        onChange={this.handleChange}
+                        onChange={(e) => this.handleFileChange(e.target.files[0])}
                         type="file"
                     />
                     <label htmlFor="snp_level_summary">
@@ -119,6 +144,12 @@ class InputForm extends React.Component {
                             {data.snp_level_summary_text}
                         </Button>
                     </label>
+                    {this.file_input !== undefined && 
+                        this.file_input.files[0] !== undefined &&
+                        <label style={styles.file_info}>
+                            File Uploaded ({formatBytes(this.file_input.files[0].size)})
+                        </label>
+                        }
                 </Row>
                 <Row>
                     <FormControl fullWidth>
@@ -133,16 +164,14 @@ class InputForm extends React.Component {
                         </Select>
                     </FormControl>
                 </Row>
+                <Row>
                     <AdvancedPanel 
                         window={window}
                         alpha={alpha}
                         handleChange={this.handleChange}
                     />
-                <Row>
-
-                </Row>
-
-                <Fab color="primary" style={styles.run_button}>
+                </Row> 
+                <Fab color="primary" style={styles.run_button} onClick={() => this.handleRun({ndex, protein_coding, window, alpha, snp_level_summary})}>
                     <ArrowForwardIcon/>
                 </Fab>
             </form>
