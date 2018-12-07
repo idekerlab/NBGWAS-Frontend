@@ -1,16 +1,14 @@
 import React from 'react'
-import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button'
-import Paper from '@material-ui/core/Paper'
-import styles from './styles'
 import ResultTable from './ResultTable'
 import NetworkView from './NetworkView'
 
 
 
 function Results(props) {
-    const {classes, data, handleBack} = props;
-    return <Paper className={classes.card}>
+    const {data, handleBack} = props;
+    return (
+    <div>
         <NetworkView 
             data={data}    
         />
@@ -20,21 +18,21 @@ function Results(props) {
                 { id: 'id', numeric: false, disablePadding: true, label: 'Name' },
                 { id: 'value', numeric: true, disablePadding: false, label: 'Value' }]}
           />
-        <div className={classes.buttonBar}>
-            <Button variant="contained" style={{float: 'none'}} className={classes.button}
+        <div>
+            <Button variant="contained" style={{float: 'none'}}
                 onClick={handleBack}>
                 Back
             </Button>
 
-            <Button variant="contained" className={classes.button}>
+            <Button variant="contained">
                 Export to CSV
             </Button>
-            <Button variant="contained" color="primary" className={classes.button}>
+            <Button variant="contained" color="primary">
                 View on NDEx
             </Button>
         </div>
-
-    </Paper>;
+    </div>
+    );
 }
 
-export default withStyles(styles)(Results)
+export default Results;
