@@ -82,14 +82,14 @@ class Results extends React.Component {
 
     render() {
         const { data } = this.state;
-        return (<div>
-            <p>Result at <a href={this.props.location}>{this.props.location}</a></p>
-            {data === null ? 
+        const id = this.props.location.substring(this.props.location.lastIndexOf("/") + 1);
+        return (data === null ? 
+            <div>
+                <p>Waiting for result (task UUID: {id})...</p>
                 <LinearProgress />
-                :
-                <ResultInfo data={data} handleBack={this.props.handleBack}/>            
-            }
-        </div>
+            </div>
+            :
+            <ResultInfo data={data} handleBack={this.props.handleBack}/>            
         );
     }
 }
@@ -108,9 +108,14 @@ function ResultInfo(props) {
                 { id: 'value', numeric: true, disablePadding: false, label: 'Value' }]}
           />
         <div>
-            <Button variant="contained" onClick={handleBack}>
-                Back
-            </Button>
+            <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">
+                <Button variant="contained" onClick={() => {  
+                    if (window.confirm("All results will be lost. Be sure to export your data to CSV or NDEx! \n Continue?")){
+                        handleBack()
+                    }
+                }}>Back
+                </Button>
+            </Tooltip>
             <Button variant="contained" style={styles.floatRight} onClick={() => downloadAsCsv(data)}>
                 Export to CSV
             </Button>

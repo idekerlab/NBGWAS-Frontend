@@ -23,7 +23,6 @@ class Content extends React.Component {
         this.state = {
             location: null,
             running: false,
-            data: null,
             complete: 0
         };
         this.timer = null;
@@ -43,7 +42,7 @@ class Content extends React.Component {
     }
 
     handleClear = () => {
-        this.setState({running: false, location: null, data: null})
+        this.setState({running: false, location: null})
     }
 
     componentDidMount(){
@@ -69,10 +68,10 @@ class Content extends React.Component {
     }
 
     render(){
-        const {data, location, running, complete} = this.state;
+        const {location, running, complete} = this.state;
         let paperStyle = {
             marginTop: '100px',
-            maxWidth: data === null ? '800px' : 'none', 
+            maxWidth: location === null ? '800px' : 'none', 
             ...styles.paper};
         return (
             <div>
