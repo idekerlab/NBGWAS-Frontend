@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,7 +8,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
-import styles from './styles'
 
 
 
@@ -98,10 +96,6 @@ class EnhancedTable extends React.Component {
         };
     }
 
-    componentWillUpdate(args){
-        
-    }
-
     handleRequestSort = (event, property) => {
         const orderBy = property;
         let order = 'desc';
@@ -124,14 +118,17 @@ class EnhancedTable extends React.Component {
     isSelected = id => this.state.selected.indexOf(id) !== -1;
 
     render() {
-        const { classes, data, columns } = this.props;
+        const { data, columns } = this.props;
         const { order, orderBy, rowsPerPage, page } = this.state;
+        if (data === undefined){
+            return <p>No data found. Is the url correct?</p>
+        }
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
         return (
             <div>
-                <div className={classes.tableWrapper}>
-                    <Table className={classes.table} aria-labelledby="tableTitle">
+                <div>
+                    <Table aria-labelledby="tableTitle">
                         <EnhancedTableHead
                             columns={columns}
                             order={order}
@@ -191,9 +188,8 @@ class EnhancedTable extends React.Component {
 }
 
 EnhancedTable.propTypes = {
-    classes: PropTypes.object.isRequired,
     data: PropTypes.array.isRequired,
     columns: PropTypes.array.isRequired
 };
 
-export default withStyles(styles)(EnhancedTable);
+export default EnhancedTable;

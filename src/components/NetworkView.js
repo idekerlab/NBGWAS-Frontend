@@ -1,15 +1,19 @@
 import React from 'react'
-import styles from './styles'
-import { withStyles } from '@material-ui/core/styles';
 
+const styles = {
+    networkView: {
+        border: '2px solid black',
+        width: '100%',
+        height: '500px'
+    }
+}
 
 function NetworkView(props) {
-    const {classes} = props;
     return (
-    <div className={classes.networkView}>
+    <div style={styles.networkView}>
         Network View Here
     </div>
     );
 }
 
-export default withStyles(styles)(NetworkView);
+export default NetworkView;
