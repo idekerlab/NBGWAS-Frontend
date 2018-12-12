@@ -1,8 +1,9 @@
 const data = {
-    title: 'NBGWAS Service',
-    subheader: 'The network-boosed GWAS package re-prioritizes significant single nucleotide polymorphisms (SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
+    title: 'Network Assisted Genomic Analysis',
+    subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms (SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
     github: 'https://github.com/shfong/nbgwas',
     swagger: '/rest/v1',
+    endpoint: "http://nbgwas.ucsd.edu/rest/v1/snp_analyzer",
     snp_level_summary_text: 'SNP Level Summary',
     snp_level_summary_help: 'Comma delimited file with format of (chromosome, basepair, p_value)',
     ndex_text: 'Network UUID',
@@ -17,7 +18,7 @@ const data = {
     form: {
         ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
         snp_level_summary: '',
-        protein_coding: 'hg19',
+        protein_coding: 'hg18',
         alpha: '',
         window: 10000
     }

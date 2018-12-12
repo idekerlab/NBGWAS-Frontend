@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import { TextField, FormControl, Select, MenuItem, InputLabel,
     Button, CardHeader, ExpansionPanel, ExpansionPanelSummary, 
     Typography } from '@material-ui/core';
@@ -8,10 +7,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab';
 
 import data from '../data'
-
-
-// const ENDPOINT = "localhost:8080/rest/v1/snp_analyzer";
-const ENDPOINT = "http://nbgwas.ucsd.edu/rest/v1/snp_analyzer";
 
 
 const styles = {
@@ -35,6 +30,12 @@ const styles = {
     },
     file_info: {
         paddingLeft: '30px'
+    },
+    error: {
+        color: 'red'
+    },
+    info: {
+        color: 'black'
     }
 }
 
@@ -50,7 +51,7 @@ const AdvancedPanel = (props) => {
     return (
         <ExpansionPanel>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>Advanced Settings</Typography>
+                <Typography>Advanced Settings (optional)</Typography>
             </ExpansionPanelSummary>
             <div style={styles.advanced_content}>
                 <Row>
@@ -85,37 +86,70 @@ function formatBytes(a, b) { if (0 === a) return "0 Bytes"; var c = 1024, d = b 
 class InputForm extends React.Component {
     constructor(props){
         super(props)
-        this.state = data.form;
+        this.state = {
+            ...data.form};
     }
 
     handleChange = event => {
         this.setState({[event.target.name]: event.target.value})
     }
 
-    handleRun = () => {
-        const data = this.state;
-        axios.post(ENDPOINT, data).then(
-            res => {
-                console.log(res)
-                this.props.handleData("DATA RETURNED")
-            }
-        )
-    }
-
     handleFileChange = (file) => {
         this.setState({snp_level_summary: file})
+    }
+
+    validate = (data) => {
+        try {
+
+            const ndex = data.get('ndex')
+            if (ndex.length !== 36){
+                throw new Error("NDEx UUID is invalid")
+            }
+            
+            const snp = this.file_input.files[0];
+            if (snp === undefined){
+                throw new Error("No SNP Level Summary provided.")
+            }
+            data.append('snp_level_summary', this.file_input.files[0])
+            
+            const alpha = data.get('alpha')
+            if (alpha === '') {
+                data.delete('alpha')
+            }else{
+                data.set('alpha', parseFloat(alpha))
+            }
+
+            const window = data.get('window')
+            data.set('window', parseInt(window))
+        } catch(e){
+            alert(e.message)
+            return null
+        }
+        return data;
+    }
+
+    onSubmit = (event) => {
+        event.preventDefault();
+        
+        
+        const formData = new FormData(event.target);
+        const data = this.validate(formData);
+        if (data === null){
+
+            return;
+        }
+        this.props.handleSubmit(data)        
     }
 
     render(){
         const {
             ndex,
             protein_coding,
-            snp_level_summary,
             window,
             alpha
         } = this.state;
         return (
-            <form style={styles.form}>
+            <form style={styles.form} onSubmit={this.onSubmit}>
                 <CardHeader
                     title={data.title}
                     subheader={data.subheader}/>
@@ -171,9 +205,14 @@ class InputForm extends React.Component {
                         handleChange={this.handleChange}
                     />
                 </Row> 
-                <Fab color="primary" style={styles.run_button} onClick={() => this.handleRun({ndex, protein_coding, window, alpha, snp_level_summary})}>
-                    <ArrowForwardIcon/>
-                </Fab>
+                <Row>
+                    <Fab color="primary" 
+                        style={styles.run_button} 
+                        type="submit"
+                        >
+                        <ArrowForwardIcon/>
+                    </Fab>
+                </Row>
             </form>
         )
     }

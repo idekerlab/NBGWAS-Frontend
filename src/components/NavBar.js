@@ -12,7 +12,7 @@ const NavBar = (props) => {
             <AppBar position="fixed">
                 <Toolbar>
                     <Typography variant="title" style={{flexGrow: 1}} color="inherit">
-                        NBGWAS Service
+                        {data.title}
                     </Typography>
                     <Button
                         href={data.swagger}
