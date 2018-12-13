@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper'
 import InputForm from './InputForm'
 import Results from './Results'
 import { LinearProgress } from '@material-ui/core';
-import DATA from '../data'
+import data from '../data'
 import axios from 'axios'
 
 const styles = {
@@ -13,7 +13,8 @@ const styles = {
         marginRight: 'auto',
         padding: '10px',
         alignContent: 'center',
-        marginBottom: '20px'
+        marginBottom: '20px',
+        minWidth: '600px'
     },
 }
 
@@ -49,7 +50,7 @@ class Content extends React.Component {
         
     }
 
-    handleSubmit = (data) => {
+    handleSubmit = (formData) => {
         const config = {
             onUploadProgress: (progressEvent) => {
                 var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
@@ -57,7 +58,7 @@ class Content extends React.Component {
             }
         }
         this.setState({running: true})
-        axios.post(DATA.endpoint, data, config)
+        axios.post(data.url.endpoint, formData, config)
         .then(res => { this.handleResponse(res) })
         .catch(error => {
             window.err = error

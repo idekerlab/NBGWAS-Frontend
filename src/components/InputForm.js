@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextField, FormControl, Select, MenuItem, InputLabel,
     Button, CardHeader, ExpansionPanel, ExpansionPanelSummary, 
-    Typography } from '@material-ui/core';
+    Typography, FormHelperText } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Fab from '@material-ui/core/Fab';
@@ -10,6 +10,10 @@ import data from '../data'
 
 
 const styles = {
+    header: {
+        padding: '4px 6px 4px 6px',
+        marginBottom: '20px',
+    },
     run_button: {
         float: 'right',
         marginRight: '15px',
@@ -23,7 +27,10 @@ const styles = {
         display: 'none'
     },
     row: {
-        marginBottom: '20px'
+        marginBottom: '20px',
+        marginLeft: '30px',
+        marginRight: '30px',
+
     },
     advanced_content: {
         padding: '20px'
@@ -36,6 +43,10 @@ const styles = {
     },
     info: {
         color: 'black'
+    },
+    subheader: {
+        backgroundColor: '#fafafa',
+        padding: '2px 6px 2px 6px'
     }
 }
 
@@ -58,8 +69,8 @@ const AdvancedPanel = (props) => {
                     <TextField
                         name="window"
                         type="number"
-                        label={data.window_text}
-                        helperText={data.window_help}
+                        label={data.text.window}
+                        helperText={data.help.window}
                         value={props.window}
                         onChange={props.handleChange}
                         fullWidth
@@ -68,8 +79,12 @@ const AdvancedPanel = (props) => {
                 <Row>
                     <TextField
                         name="alpha"
-                        label={data.alpha_text}
-                        helperText={data.alpha_help}
+                        label={data.text.alpha}
+                        helperText={<span>
+                            {data.help.alpha}
+                            <br />
+                            If unset, then optimal parameter is selected by linear model derived from <a href="https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30095-4">(Huang, Cell Systems 2018)</a>
+                        </span>}
                         value={props.alpha}
                         onChange={props.handleChange}
                         fullWidth
@@ -87,7 +102,7 @@ class InputForm extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            ...data.form};
+            ...data.defaults};
     }
 
     handleChange = event => {
@@ -98,10 +113,10 @@ class InputForm extends React.Component {
         this.setState({snp_level_summary: file})
     }
 
-    validate = (data) => {
+    validate = (formData) => {
         try {
 
-            const ndex = data.get('ndex')
+            const ndex = formData.get('ndex')
             if (ndex.length !== 36){
                 throw new Error("NDEx UUID is invalid")
             }
@@ -110,22 +125,22 @@ class InputForm extends React.Component {
             if (snp === undefined){
                 throw new Error("No SNP Level Summary provided.")
             }
-            data.append('snp_level_summary', this.file_input.files[0])
+            formData.append('snp_level_summary', this.file_input.files[0])
             
-            const alpha = data.get('alpha')
+            const alpha = formData.get('alpha')
             if (alpha === '') {
-                data.delete('alpha')
+                formData.delete('alpha')
             }else{
-                data.set('alpha', parseFloat(alpha))
+                formData.set('alpha', parseFloat(alpha))
             }
 
-            const window = data.get('window')
-            data.set('window', parseInt(window))
+            const window = formData.get('window')
+            formData.set('window', parseInt(window))
         } catch(e){
             alert(e.message)
             return null
         }
-        return data;
+        return formData;
     }
 
     onSubmit = (event) => {
@@ -133,12 +148,16 @@ class InputForm extends React.Component {
         
         
         const formData = new FormData(event.target);
-        const data = this.validate(formData);
-        if (data === null){
+        const valid_data = this.validate(formData);
+        if (valid_data === null){
 
             return;
         }
-        this.props.handleSubmit(data)        
+        this.props.handleSubmit(valid_data)        
+    }
+
+    componentDidMount(){
+
     }
 
     render(){
@@ -148,25 +167,23 @@ class InputForm extends React.Component {
             window,
             alpha
         } = this.state;
+
+        const subheader = <div style={styles.subheader}>
+            <p>{data.subheader}</p>
+           
+            <p>To generate the same results as in <a href={data.url.publication}>the publication</a>, use the <a href={data.url.sample_file}>sample schizophrenia GWAS summary statistics</a>.
+            Ensure that the protein coding is set to hg18</p>
+        </div>
+
         return (
             <form style={styles.form} onSubmit={this.onSubmit}>
                 <CardHeader
+                    style={styles.header}
                     title={data.title}
-                    subheader={data.subheader}/>
-                <Row>
-                    <TextField
-                        name="ndex"
-                        label={data.ndex_text}
-                        helperText={data.ndex_help}
-                        value={ndex}
-                        onChange={this.handleChange}
-                        fullWidth
-                    />
-                </Row>
-
+                    subheader={subheader}/>
                 <Row>
                     <input
-                        ref={v => {this.file_input = v}}
+                        ref={v => { this.file_input = v }}
                         accept="text/*"
                         id="snp_level_summary"
                         style={styles.snp_input}
@@ -174,28 +191,41 @@ class InputForm extends React.Component {
                         type="file"
                     />
                     <label htmlFor="snp_level_summary">
-                        <Button variant="contained" component="span">
-                            {data.snp_level_summary_text}
+                        <Button variant="contained" component="span" >
+                            {data.text.snp_level_summary}
                         </Button>
                     </label>
-                    {this.file_input !== undefined && 
+                    {this.file_input !== undefined &&
                         this.file_input.files[0] !== undefined &&
                         <label style={styles.file_info}>
                             File Uploaded ({formatBytes(this.file_input.files[0].size)})
                         </label>
-                        }
+                    }
+                    <FormHelperText>{data.help.snp_level_summary}</FormHelperText>
+                </Row>
+                <Row>
+                    <TextField
+                        name="ndex"
+                        label={data.text.ndex}
+                        helperText={data.help.ndex}
+                        value={ndex}
+                        onChange={this.handleChange}
+                        fullWidth
+                    />
                 </Row>
                 <Row>
                     <FormControl fullWidth>
-                        <InputLabel htmlFor="protein_coding">{data.protein_coding_text}</InputLabel>
+                        <InputLabel htmlFor="protein_coding">{data.text.protein_coding}</InputLabel>
                         <Select
                             name="protein_coding"
                             value={protein_coding}
                             onChange={this.handleChange}
+                            
                         >
                             <MenuItem value="hg18">hg18</MenuItem>
                             <MenuItem value="hg19">hg19</MenuItem>
                         </Select>
+                        <FormHelperText>{data.help.protein_coding}</FormHelperText>
                     </FormControl>
                 </Row>
                 <Row>

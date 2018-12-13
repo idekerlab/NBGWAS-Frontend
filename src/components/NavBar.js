@@ -15,10 +15,13 @@ const NavBar = (props) => {
                         {data.title}
                     </Typography>
                     <Button
-                        href={data.swagger}
+                        href={data.url.data}
+                        color="inherit">Sample Data</Button>
+                    <Button
+                        href={data.url.swagger}
                         color="inherit">Swagger API</Button>
                     <Button
-                        href={data.github}
+                        href={data.url.github}
                         color="inherit">Github</Button>
                 </Toolbar>
             </AppBar>
