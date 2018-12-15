@@ -20,9 +20,9 @@ const styles = {
 }
 
 function downloadAsCsv(data){
-    var csv = 'Name,Value\n';
+    var csv = 'Name,Final Heat\n';
     data.forEach(function (row) {
-        csv += row['id'] + ',' + row['value'];
+        csv += row['id'] + ',' + row['heat'];
         csv += "\n";
     });
     var hiddenElement = document.createElement('a');
@@ -64,7 +64,7 @@ class Results extends React.Component {
     handleData = data => {
         clearInterval(this.timer)
         let rows = Object.keys(data).map(key => {
-            return { id: key, value: data[key] }
+            return { id: key, heat: data[key] }
         })
 
         window.rows = rows;
@@ -99,13 +99,13 @@ function ResultInfo(props) {
 
     return (
     <div>
-        {/* <NetworkView/> */}
+        <NetworkView/>
 
         <ResultTable
             data={data}
             columns={[
                 { id: 'id', numeric: false, disablePadding: true, label: 'Name' },
-                { id: 'value', numeric: true, disablePadding: false, label: 'Value' }]}
+                { id: 'heat', numeric: true, disablePadding: false, label: 'Final Heat' }]}
           />
         <div>
             <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">

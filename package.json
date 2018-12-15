@@ -26,5 +26,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "homepage": "http://www.nbgwas.ucsd.edu/build/"
+  "homepage": "http://www.nbgwas.ucsd.edu/"
 }

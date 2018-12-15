@@ -4,7 +4,6 @@ import { TextField, FormControl, Select, MenuItem, InputLabel,
     Typography, FormHelperText } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Fab from '@material-ui/core/Fab';
 
 import data from '../data'
 
@@ -21,7 +20,8 @@ const styles = {
     },
     form: {
         overflow: 'auto',
-        padding: '10px'
+        padding: '10px',
+        position: 'relative'
     },
     snp_input: {
         display: 'none'
@@ -46,7 +46,10 @@ const styles = {
     },
     subheader: {
         backgroundColor: '#fafafa',
-        padding: '2px 6px 2px 6px'
+        padding: '2px 6px 2px 6px',
+    },
+    sample_button: {
+        margin: '2px'
     }
 }
 
@@ -160,6 +163,21 @@ class InputForm extends React.Component {
 
     }
 
+    runSample = () => {
+        const MY_URL = "/nagadata/schizophrenia.txt"
+        var request = new XMLHttpRequest();
+        request.open('GET', MY_URL, true);
+        request.responseType = 'blob';
+        request.onload = function () {
+            var reader = new FileReader();
+            reader.readAsDataURL(request.response);
+            reader.onload = function (e) {
+                console.log('DataURL:', e.target.result);
+            };
+        };
+        request.send();
+    }
+
     render(){
         const {
             ndex,
@@ -171,8 +189,15 @@ class InputForm extends React.Component {
         const subheader = <div style={styles.subheader}>
             <p>{data.subheader}</p>
            
-            <p>To generate the same results as in <a href={data.url.publication}>the publication</a>, use the <a href={data.url.sample_file}>sample schizophrenia GWAS summary statistics</a>.
-            Ensure that the protein coding is set to hg18</p>
+            <p>To generate the sample results{/* as in <a href={data.url.publication}>the publication</a>*/}
+            , use the <a href={data.url.sample_file}>sample schizophrenia GWAS summary statistics</a>.
+            Use <code>{data.sample_ndex}</code> as the NDEx network, and set the protein coding to hg18.
+            Or click below to view the sample output</p>
+            <Button
+                style={styles.sample_button}
+                onClick={this.runSample}>
+                Schizophrenia Example
+            </Button>
         </div>
 
         return (
@@ -236,12 +261,13 @@ class InputForm extends React.Component {
                     />
                 </Row> 
                 <Row>
-                    <Fab color="primary" 
+                    <Button color="primary"
+                        variant="contained" 
                         style={styles.run_button} 
                         type="submit"
                         >
-                        <ArrowForwardIcon/>
-                    </Fab>
+                        Run Analysis<ArrowForwardIcon/>
+                    </Button>
                 </Row>
             </form>
         )

@@ -30,6 +30,7 @@ class Content extends React.Component {
     }
 
     handleResponse = (res) => {
+
         window.resp = res
         console.log(res)
 
@@ -88,7 +89,9 @@ class Content extends React.Component {
                                 handleSubmit={this.handleSubmit}
                                 />
                         :
-                            <Results location={location} handleBack={this.handleClear}/>
+                            <Results
+                                location={location}
+                                handleBack={this.handleClear}/>
                         )
                     }
                 </Paper>
