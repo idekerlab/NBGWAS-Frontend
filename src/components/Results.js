@@ -1,7 +1,7 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
 import ResultTable from './ResultTable'
-import NetworkView from './NetworkView'
+// import NetworkView from './NetworkView'
 import { Tooltip, LinearProgress } from '@material-ui/core';
 import axios from 'axios'
 
@@ -52,8 +52,11 @@ class Results extends React.Component {
                 if (res.data.hasOwnProperty('status') && res.data['status'] === 'processing') {
                     return;
                 }
-                console.log(res)
-                this.handleData(res.data['result'])
+                let data = res.data;
+                if (data.hasOwnProperty('result')){
+                    data = data['result']
+                }
+                this.handleData(data)
             }).catch(error => {
                 clearInterval(this.timer)
                 alert(error.stack)
@@ -89,17 +92,23 @@ class Results extends React.Component {
                 <LinearProgress />
             </div>
             :
-            <ResultInfo data={data} handleBack={this.props.handleBack}/>            
+            <ResultInfo data={data} ndex={this.props.ndex} handleBack={this.props.handleBack}/>            
         );
     }
 }
 
 function ResultInfo(props) {
-    const {data, handleBack} = props;
+    const {
+        // ndex,
+        data, 
+        handleBack} = props;
 
     return (
     <div>
-        <NetworkView/>
+        {/* <NetworkView
+            data={data}
+            ndex={ndex}
+        /> */}
 
         <ResultTable
             data={data}

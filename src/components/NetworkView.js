@@ -11,11 +11,13 @@ const styles = {
 
 class NetworkView extends React.Component {
     componentDidMount(){
-        const values = this.props.data;
+        // const values = this.props.data;
+        
 
         axios.get('http://ndexbio.org/v2/network/' + this.props.ndex)
-        .then(res => res.json())
         .then(res => {
+            const net = res.data;
+            
             console.log(res)
         })
         .catch(err => {
@@ -24,9 +26,11 @@ class NetworkView extends React.Component {
     }
 
     render(){
+        const { ndex } = this.props;
+
         return (
         <div style={styles.networkView}>
-            Network View Here
+            Network View for {ndex}
         </div>
         );
     }
