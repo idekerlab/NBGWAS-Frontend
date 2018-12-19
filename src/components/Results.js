@@ -49,9 +49,12 @@ class Results extends React.Component {
     poll = () => {
         axios.get(this.props.location)
             .then(res => {
-                if (res.data.hasOwnProperty('status') && res.data['status'] === 'processing') {
-                    return;
+                if (res.data.hasOwnProperty('status')){
+                    if (res.data['status'] === 'processing' || res.data['status'] === 'submitted') {
+                        return;
+                    }
                 }
+                
                 let data = res.data;
                 if (data.hasOwnProperty('result')){
                     data = data['result']
