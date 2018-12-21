@@ -90,7 +90,7 @@ class EnhancedTable extends React.Component {
         super(props)
         this.state = {
             order: 'desc',
-            orderBy: 'value',
+            orderBy: 'heat',
             page: 0,
             rowsPerPage: 15,
         };
