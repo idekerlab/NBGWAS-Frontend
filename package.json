@@ -8,12 +8,12 @@
     "axios": "^0.18.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.1"
+    "react-scripts": "^2.1.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "npm run build && rsync -rlzv --progress --exclude=.git --exclude=.vscode `pwd`/build/ nbgwas.ucsd.edu:/var/www/html/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -26,5 +26,6 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "homepage": "http://www.nbgwas.ucsd.edu/"
+  "proxy": "http://nbgwas.ucsd.edu",
+  "homepage": "."
 }

@@ -3,16 +3,17 @@ const data = {
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
     url: {
-        sample_file: 'http://nbgwas.ucsd.edu/nagadata/schizophrenia.txt',
-        sample_results: 'http://nbgwas.ucsd.edu/nagadata/example_output/example_schizophrenia_output.json',
+        sample_file: '/nagadata/schizophrenia.txt',
+        sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
         github: 'https://github.com/shfong/nbgwas',
         swagger: '/rest/v1',
-        data: 'http://nbgwas.ucsd.edu/nagadata',
-        endpoint: "http://nbgwas.ucsd.edu/rest/v1/snp_analyzer",
-        publication: "/",
+        data: '/nagadata',
+        endpoint: "/rest/v1/snp_analyzer",
+        // publication: "/",
     },
     defaults: {
         ndex: '',
+        snp_level_summary: null,
         protein_coding: 'hg18',
         alpha: '',
         window: 10000

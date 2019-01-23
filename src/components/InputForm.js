@@ -36,14 +36,12 @@ class InputForm extends React.Component {
             complete: 0,
             running: false,
             ...data.defaults};
+
+        this.file_input = null;
     }
 
     handleChange = event => {
         this.setState({[event.target.name]: event.target.value})
-    }
-
-    handleFileChange = (file) => {
-        this.setState({snp_level_summary: file})
     }
 
     runSample = (event) => {
@@ -51,19 +49,19 @@ class InputForm extends React.Component {
         this.props.handleLocation(data.url.sample_results, data.sample_ndex)
     }
 
+
     validate = (formData) => {
         try {
-
             const ndex = formData.get('ndex')
             if (ndex.length !== 36){
                 throw new Error("NDEx UUID is invalid")
             }
-            
-            const snp = this.file_input.files[0];
+
+            const snp = this.state.snp_level_summary;
             if (snp === undefined){
                 throw new Error("No SNP Level Summary provided.")
             }
-            formData.append('snp_level_summary', this.file_input.files[0])
+            formData.append('snp_level_summary', snp)
             
             const alpha = formData.get('alpha')
             if (alpha === '') {
@@ -74,6 +72,7 @@ class InputForm extends React.Component {
 
             const window = formData.get('window')
             formData.set('window', parseInt(window))
+
         } catch(e){
             alert(e.message)
             return null
@@ -84,11 +83,9 @@ class InputForm extends React.Component {
     onSubmit = (event) => {
         event.preventDefault();
         
-        
         const formData = new FormData(event.target);
         const valid_data = this.validate(formData);
         if (valid_data === null){
-
             return;
         }
         this.handleSubmit(valid_data)        
@@ -98,10 +95,10 @@ class InputForm extends React.Component {
         const config = {
             onUploadProgress: (progressEvent) => {
                 var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                this.setState({ complete: percentCompleted })
+                this.setState({ running: true, complete: percentCompleted })
             }
         }
-        this.setState({ running: true })
+        
         axios.post(data.url.endpoint, formData, config)
             .then(res => {
                 if (res['data'] === 'failed') {
@@ -120,13 +117,10 @@ class InputForm extends React.Component {
             })
     }
 
-    componentDidMount(){
-    
-    }
-
     render(){
         const {
             ndex,
+            snp_level_summary,
             protein_coding,
             window,
             alpha,
@@ -163,9 +157,12 @@ class InputForm extends React.Component {
                     title={data.title}
                     subheader={subheader}/>
                 <FileUpload 
-                    handleRef={comp => {
-                        this.file_input = comp
-                    }}
+                    onChange={(f) => this.setState({snp_level_summary: f})}
+                    name="snp_level_summary"
+                    value={snp_level_summary}
+                    // ref={comp => {
+                    //     this.file_input = comp
+                    // }}
                 />
                 <Row>
                     <TextField

@@ -1,9 +1,11 @@
 import React from 'react'
 import Button from '@material-ui/core/Button'
+import { Tooltip, LinearProgress } from '@material-ui/core';
+import BackIcon from '@material-ui/icons/Close'
+import axios from 'axios'
+
 import ResultTable from './ResultTable'
 // import NetworkView from './NetworkView'
-import { Tooltip, LinearProgress } from '@material-ui/core';
-import axios from 'axios'
 
 const styles = {
     floatRight: {
@@ -16,6 +18,12 @@ const styles = {
     errorBox: {
         background: '#ff000020',
         paddingLeft: '7px'
+    },
+    back: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        padding: '5px'
     }
 }
 
@@ -62,8 +70,8 @@ class Results extends React.Component {
                 this.handleData(data)
             }).catch(error => {
                 clearInterval(this.timer)
-                alert(error.stack)
                 this.props.handleBack()
+                alert(error.stack)
             })
     }
 
@@ -88,11 +96,17 @@ class Results extends React.Component {
 
     render() {
         const { data } = this.state;
+        if (this.props.location === null){
+            return (<div>
+                <p>Unkown location: {this.props.location})...</p>
+                </div>);
+        }
         const id = this.props.location.substring(this.props.location.lastIndexOf("/") + 1);
         return (data === null ? 
             <div>
-                <p>Waiting for result (task UUID: {id})...</p>
+                <p>Waiting for result (task UUID: '{id}')</p>
                 <LinearProgress />
+                <a href="/" style={styles.back}><BackIcon /></a>
             </div>
             :
             <ResultInfo data={data} ndex={this.props.ndex} handleBack={this.props.handleBack}/>            

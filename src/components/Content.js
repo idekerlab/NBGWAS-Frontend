@@ -1,5 +1,6 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
+
 import InputForm from './InputForm'
 import Results from './Results'
 
@@ -11,13 +12,26 @@ const styles = {
         padding: '10px',
         alignContent: 'center',
         marginBottom: '20px',
-        minWidth: '600px'
+        minWidth: '600px',
+        position: 'relative'
     },
     disclaimer: {
         marginTop: '4px',
         marginBottom: '4px',
         textAlign: 'center'
     }
+}
+
+
+function WarningBar({paperStyle}) {
+    return (
+        <Paper style={{ backgroundColor: '#ffdddd', ...paperStyle }}>
+            <p style={styles.disclaimer}>
+                NOTE: This service is experimental. The interface is subject to change.<br />
+                See <a href="https://github.com/shfong/nbgwas">https://github.com/shfong/nbgwas</a> for details and to report issues.
+                    </p>
+        </Paper>
+    );
 }
 
 class Content extends React.Component {
@@ -32,9 +46,6 @@ class Content extends React.Component {
 
     handleLocation = (location, ndex) => {
         this.setState({location, ndex})
-    }
-
-    componentDidMount(){
     }
 
     render(){
@@ -56,12 +67,8 @@ class Content extends React.Component {
                             handleBack={() => this.handleLocation(null)}/>
                     }
                 </Paper>
-                <Paper style={{backgroundColor: '#ffdddd', ...paperStyle}}>
-                    <p style={styles.disclaimer}>
-                        NOTE: This service is experimental. The interface is subject to change.<br />
-                        See <a href="https://github.com/shfong/nbgwas">https://github.com/shfong/nbgwas</a> for details and to report issues.
-                    </p>
-                </Paper>
+
+                <WarningBar paperStyle={paperStyle} />
             </div>
         );
     }
