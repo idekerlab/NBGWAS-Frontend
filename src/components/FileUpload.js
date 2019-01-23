@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import {FormHelperText, Button, Checkbox, FormControlLabel} from '@material-ui/core'
 import Row from './Row'
 import data from '../data'
@@ -51,19 +52,20 @@ class FileUpload extends React.Component {
             this.props.onChange(this.sampleFile)
             return
         }
-        
-        // // var blob = null;
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
-        
         const main = this;
-        xhr.onload = () => {
-            main.blobToFile(xhr.response);
-            // blob = xhr.response;//xhr.response is now a blob object
-        }
-        xhr.send();
 
+        axios.get(url, {
+            responseType: 'arraybuffer',
+            headers: {
+                Accept: 'application/text'
+            }
+        })
+        .then(resp => {
+            const blob = new Blob([resp.data], { type: 'application/text' })
+            main.blobToFile(blob);
+        }).catch(err => {
+            
+        })
     }
 
     sampleToggled = ev => {
