@@ -1,44 +1,61 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# Network Assisted Genomic Analysis React web-app
+This app was created as a UI frontend to the [NAGA service](http://github.com/shfong/naga) created in the Ideker lab, as a more user friendly interface to the [REST API](http://nbgwas.ucsd.edu/rest/v1) that exposes the analysis tool.
 
-In the project directory, you can run:
+The latest release of the app is deployed at http://nbgwas.ucsd.edu/
 
-### `npm start`
+__NOTE: This app is under constant development and may change without warning.__
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting Started
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This is a single page application built on ReactJS, and requires Node and NPM to build.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installing
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Clone this repository and install the dependencies
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+git clone http://github.com/brettjsettle/nbgwas-frontend
+cd nbgwas-frontend
+npm install
+```
 
-### `npm run eject`
+To test the app locally, run
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+npm start
+```
+Try running the analysis with the sample file and UUID.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Deployment
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+We use semantic versioning for deploying the app, via Github tagging. __Always__ tag a commit before running the deploy command. The deploy command will build the app and `rsync` the build folder to nbgwas.ucsd.edu if you have permission.
+```bash
+npm run deploy
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Ensure that all of the links and endpoints work on deployment. Otherwise, redeploy the last tag.
 
-## Learn More
+### Local Testing FAQ
+Using the `npm start` command to test locally causes the app to forward all requests to the `proxy` variable in `package.json`. If testing a different version of the REST API, change this variable. This variable is ignored when the project is deployed.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The `homepage` variable is set to `"."` so that the app can be published to any domain name (`nbgwas.ucsd.edu` or `nbgwas.ucsd.edu/staging`).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Future Goals
+We intend to connect this app with [Cytoscape](http://cytoscape.org) and [NDEx](http://ndexbio.org) so that output data can more easily be implemented into workflows and visualized.
+
+The paper for NAGA is on its way to being published and will be available via link soon.
+
+
+## Authors
+
+See the list of [contributors](https://github.com/brettjsettle/nbgwas-frontend/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
