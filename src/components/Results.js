@@ -45,8 +45,10 @@ class Results extends React.Component {
         super(props)
         this.state = {
             data: null,
+            columns: [],
+            parameters: {}
         }
-
+        window.results = this;
         this.handleDelete = this.handleDelete.bind(this)
     }
 
@@ -63,11 +65,10 @@ class Results extends React.Component {
                     }
                 }
                 
-                let data = res.data;
-                if (data.hasOwnProperty('result')){
-                    data = data['result']
+                let response = res.data;
+                if (response.hasOwnProperty('result')){
+                    this.handleResponse(response)
                 }
-                this.handleData(data)
             }).catch(error => {
                 clearInterval(this.timer)
                 this.props.handleBack()
@@ -75,14 +76,21 @@ class Results extends React.Component {
             })
     }
 
-    handleData = data => {
+    handleResponse= response => {
         clearInterval(this.timer)
-        let rows = Object.keys(data).map(key => {
-            return { id: key, heat: data[key] }
+        let result = response["result"];
+        let parameters = response["parameters"];
+        let columns = result['resultkey'];
+        let resultvalue = result["resultvalue"];
+
+        let data = Object.keys(resultvalue).map(key => {
+            const row = {id: key};
+            for (var i = 0; i < columns.length; i++)
+                row[columns[i]] = resultvalue[key][i];
+            return row;
         })
 
-        window.rows = rows;
-        this.setState({ data: rows })
+        this.setState({ data, columns, parameters })
     }
 
     componentWillUnmount() {
@@ -95,7 +103,7 @@ class Results extends React.Component {
     }
 
     render() {
-        const { data } = this.state;
+        const { data, columns } = this.state;
         if (this.props.location === null){
             return (<div>
                 <p>Unkown location: {this.props.location})...</p>
@@ -109,7 +117,7 @@ class Results extends React.Component {
                 <a href="/" style={styles.back}><BackIcon /></a>
             </div>
             :
-            <ResultInfo data={data} ndex={this.props.ndex} handleBack={this.props.handleBack}/>            
+            <ResultInfo data={data} columns={columns} handleBack={this.props.handleBack}/>            
         );
     }
 }
@@ -118,20 +126,26 @@ function ResultInfo(props) {
     const {
         // ndex,
         data, 
+        columns,
         handleBack} = props;
+
+    const column_arr = columns.map(name => {
+        return { id: name, numeric: true, disablePadding: true, label: name }
+    })
+
+    column_arr.splice(0, 0, {id: 'id', numeric: false, disablePadding: true, label: "Name"})
 
     return (
     <div>
         {/* <NetworkView
             data={data}
-            ndex={ndex}
         /> */}
+
 
         <ResultTable
             data={data}
-            columns={[
-                { id: 'id', numeric: false, disablePadding: true, label: 'Name' },
-                { id: 'heat', numeric: true, disablePadding: false, label: 'Final Heat' }]}
+            columns={column_arr} 
+            orderBy="finalheat"
           />
         <div>
             <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">

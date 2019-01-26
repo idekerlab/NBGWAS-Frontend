@@ -6,13 +6,13 @@ import Results from './Results'
 
 const styles = {
     paper: {
-        width: '60%',
+        width: '80%',
         marginLeft: 'auto',
         marginRight: 'auto',
         padding: '10px',
         alignContent: 'center',
         marginBottom: '20px',
-        minWidth: '600px',
+        minWidth: '800px',
         position: 'relative'
     },
     disclaimer: {
@@ -39,19 +39,19 @@ class Content extends React.Component {
         super(props)
         this.state = {
             location: null,
-            ndex: null
         };
         this.timer = null;
+        window.content = this;
     }
 
-    handleLocation = (location, ndex) => {
-        this.setState({location, ndex})
+    handleLocation = (location) => {
+        this.setState({location})
     }
 
     render(){
-        const {location, ndex} = this.state;
+        const {location} = this.state;
         let paperStyle = {
-            maxWidth: location === null ? '800px' : 'none', 
+            maxWidth: location === null ? '800px' : '1000px', 
             ...styles.paper};
         return (
             <div>
@@ -63,7 +63,6 @@ class Content extends React.Component {
                     :
                         <Results
                             location={location}
-                            ndex={ndex}
                             handleBack={() => this.handleLocation(null)}/>
                     }
                 </Paper>

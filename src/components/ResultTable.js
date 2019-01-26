@@ -9,7 +9,19 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import { withStyles } from '@material-ui/core/styles';
 
+
+const styles = theme => ({
+    row: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.background.default,
+        },
+    },
+    table_container: {
+        overflow: 'auto',
+    }
+})
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -90,9 +102,9 @@ class EnhancedTable extends React.Component {
         super(props)
         this.state = {
             order: 'desc',
-            orderBy: 'heat',
+            orderBy: props.orderBy,
             page: 0,
-            rowsPerPage: 15,
+            rowsPerPage: 25,
         };
     }
 
@@ -118,7 +130,7 @@ class EnhancedTable extends React.Component {
     isSelected = id => this.state.selected.indexOf(id) !== -1;
 
     render() {
-        const { data, columns } = this.props;
+        const { data, columns, classes } = this.props;
         const { order, orderBy, rowsPerPage, page } = this.state;
         if (data === undefined){
             return <p>No data found. Is the url correct?</p>
@@ -127,7 +139,7 @@ class EnhancedTable extends React.Component {
 
         return (
             <div>
-                <div>
+                <div className={classes.table_container}>
                     <Table aria-labelledby="tableTitle">
                         <EnhancedTableHead
                             columns={columns}
@@ -141,15 +153,13 @@ class EnhancedTable extends React.Component {
                                 .map(n => {
                                     return (
                                         <TableRow
+                                            className={classes.row}
                                             hover
                                             onClick={event => this.handleClick(event, n.id)}
                                             role="checkbox"
                                             tabIndex={-1}
                                             key={n.id}
                                         >
-                                            {/* <TableCell component="th" scope="row" padding="none">
-                                                {n.id}
-                                            </TableCell> */}
                                             {this.props.columns.map(col => 
                                                     col.numeric ?
                                                         <TableCell key={col.id} numeric>{n[col.id]}</TableCell>
@@ -168,16 +178,16 @@ class EnhancedTable extends React.Component {
                     </Table>
                 </div>
                 <TablePagination
-                    rowsPerPageOptions={[15, 25, 50]}
+                    rowsPerPageOptions={[25, 50, 100]}
                     component="div"
                     count={data.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     backIconButtonProps={{
-                        'aria-label': 'Previous Page',
+                        'aria-label': 'Previous',
                     }}
                     nextIconButtonProps={{
-                        'aria-label': 'Next Page',
+                        'aria-label': 'Next',
                     }}
                     onChangePage={this.handleChangePage}
                     onChangeRowsPerPage={this.handleChangeRowsPerPage}
@@ -192,4 +202,4 @@ EnhancedTable.propTypes = {
     columns: PropTypes.array.isRequired
 };
 
-export default EnhancedTable;
+export default withStyles(styles)(EnhancedTable);
