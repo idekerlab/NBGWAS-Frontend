@@ -24,6 +24,7 @@ class FileUpload extends React.Component {
         super(props)
         this.state = {
             sample: false,
+            progress: 0
         }
         this.sampleFile = null;
     }
@@ -37,6 +38,14 @@ class FileUpload extends React.Component {
         const main = this;
         var myReader = new FileReader();
         myReader.readAsArrayBuffer(blob);
+        
+        myReader.onprogress = function (data) {
+            if (data.lengthComputable) {
+                var progress = parseInt(((data.loaded / data.total) * 100), 10);
+                main.setState({progress})
+                console.log(progress)
+            }
+        }
         myReader.addEventListener("loadend", function (e) {
             var buffer = e.srcElement.result;//arraybuffer object
             const f = new File([buffer], "schizophrenia.txt");
@@ -80,7 +89,7 @@ class FileUpload extends React.Component {
     }
 
     render(){
-        const {sample} = this.state;
+        const {sample, progress} = this.state;
         const {value} = this.props;
 
         return (<Row>
@@ -114,6 +123,11 @@ class FileUpload extends React.Component {
 
                 </p>
             </div>
+            {(progress > 0 && progress < 100) &&
+                <FormHelperText>
+                    File Uploading... ({progress}%)
+                </FormHelperText>
+            }
             {(value !== null) &&
                 <FormHelperText>
                     File Uploaded ({formatBytes(value.size)})

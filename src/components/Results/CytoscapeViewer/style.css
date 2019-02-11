@@ -1,5 +1,5 @@
-.cytoscape-container {
-    width: 100%;
-    min-height: 500px;
-    border: black solid 2px;
+.cytoscape-component {
+    position: absolute;
+    height:100%;
+    width:100%;
 }

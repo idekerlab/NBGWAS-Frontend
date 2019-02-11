@@ -1,9 +1,7 @@
 import React from 'react'
 
 import CytoscapeComponent from 'react-cytoscapejs'
-
 import { CxToJs, CyNetworkUtils } from 'cytoscape-cx2js'
-
 import './style.css'
 
 
@@ -35,7 +33,7 @@ const CytoscapeViewer = props => {
 
     return (
         <CytoscapeComponent
-            className="cytoscape-container"
+            className="cytoscape-component"
             elements={elementsArray}
             layout={{ name: 'cose' }}
             style={{ width: '100%', height: '100%' }}

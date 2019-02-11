@@ -46,7 +46,7 @@ class InputForm extends React.Component {
 
     runSample = (event) => {
         event.preventDefault()
-        this.props.handleLocation(data.url.sample_results, data.sample_ndex)
+        this.props.handleLocation(data.url.sample_results)
     }
 
 

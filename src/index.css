@@ -1,4 +1,8 @@
+html {
+  min-height:100%;
+}
 body {
+  background: orange;
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -14,11 +18,6 @@ code {
 }
 
 #root {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: orange;
-
+  position:relative;
+  min-height:100%;
 }

@@ -11,7 +11,9 @@ class App extends Component {
     return (
       <div className="App">
         <NavBar/>
-        <Content/>
+        <div className="paper-container">
+          <Content/>
+        </div>
         <WarningBar />
       </div>
     );
