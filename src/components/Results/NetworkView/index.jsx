@@ -1,34 +1,36 @@
 import React from 'react'
 import axios from 'axios'
 import './style.css'
+
 import CytoscapeViewer from '../CytoscapeViewer'
 
 const url = 'http://www.ndexbio.org/v2/search/network/{networkid}/interconnectquery?save=false'
 
-
-// Names of top n, join with ' ', run query, load CX in viewer
 class NetworkView extends React.Component {
 
     constructor(props){
         super(props);
         this.state = {
             network: null,
+            geneList: []
         }
     }
 
-    componentDidMount(){
-        const { ndex, searchString } = this.props;
+    componentWillMount(){
+        const { ndex, geneList } = this.props;
+        const searchString = geneList.map(a => a.id).join(' ')
         const ndex_url = url.replace('{networkid}', ndex)
         axios.post(ndex_url, { searchString })
         .then(resp => {
             const network = resp.data;
-            this.setState({network})
+            this.setState({network, geneList})
         });
     }
 
     render(){
         const {
-            network
+            network,
+            geneList
         } = this.state;
 
         return (
@@ -36,6 +38,7 @@ class NetworkView extends React.Component {
             className="cytoscape-container">
             <CytoscapeViewer
                 network={network}
+                geneList={geneList}
             />
         </div>
         );

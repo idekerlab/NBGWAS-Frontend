@@ -36,7 +36,10 @@ const data = {
         protein_coding: 'Sets which protein coding table to use data relatedto NCBI human genome build hg18 or hg19',
     },
     sample_ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
-    
+    columns: {
+        negativelog: 'Gene Input Heat',
+        finalheat: 'Final Heat'
+    }
     
 }
 

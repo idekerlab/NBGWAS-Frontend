@@ -4,6 +4,7 @@ import { Tooltip, LinearProgress } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/Close'
 import axios from 'axios'
 
+import DATA from '../../assets/data'
 import ResultTable from './ResultTable'
 import NetworkView from './NetworkView'
 
@@ -27,12 +28,7 @@ const styles = {
     }
 }
 
-const COLUMN_MAP = {
-    negativelog: 'Gene Input Heat',
-    finalheat: 'Final Heat'
-}
-
-const TOP_N = 20;
+const TOP_N = 500;
 
 function downloadAsCsv(columns, data){
     var csv = 'Name,Final Heat\n';
@@ -53,7 +49,9 @@ class Results extends React.Component {
         this.state = {
             data: null,
             columns: [],
-            parameters: {}
+            parameters: {},
+            geneList: [],
+            ndex: null
         }
         this.handleDelete = this.handleDelete.bind(this)
     }
@@ -94,7 +92,7 @@ class Results extends React.Component {
         let ndex = parameters['ndex']
 
         // Map column names to something prettier
-        columns = columns.map(a => COLUMN_MAP[a]).filter(a => a !== undefined)
+        columns = columns.map(a => DATA.columns[a]).filter(a => a !== undefined)
 
         // Organize data in readable manner: {id:, col1:, col2:}
         let data = Object.keys(resultvalue).map(key => {
@@ -104,11 +102,10 @@ class Results extends React.Component {
             return row;
         })
 
-        data.sort((a, b) => b[COLUMN_MAP['finalheat']] - a[COLUMN_MAP['finalheat']])
-        let topNodes = data.slice(0, TOP_N)
-        let searchString = topNodes.map(a => a['id']).join(' ')
+        data.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']])
+        let geneList = data.slice(0, TOP_N)
 
-        this.setState({ data, columns, parameters, searchString, ndex })
+        this.setState({ data, columns, parameters, geneList, ndex })
     }
 
     componentWillUnmount() {
@@ -121,7 +118,7 @@ class Results extends React.Component {
     }
 
     render() {
-        const { data, columns, searchString, ndex } = this.state;
+        const { data, columns, geneList, ndex } = this.state;
         if (this.props.location === null){
             return (<div>
                 <p>Unkown location: {this.props.location})...</p>
@@ -138,7 +135,7 @@ class Results extends React.Component {
             <div className="results">
                 <NetworkView
                     ndex={ndex}
-                    searchString={searchString}
+                    geneList={geneList}
                     />
                 <ResultInfo 
                     data={data} 
@@ -166,7 +163,7 @@ const ResultInfo = (props) => {
         <ResultTable
             data={data}
             columns={column_arr} 
-            orderBy={COLUMN_MAP['finalheat']}
+            orderBy={DATA.columns['finalheat']}
           />
     );
 }
