@@ -7,7 +7,7 @@ import Row from './Row'
 import AdvancedPanel from './AdvancedPanel'
 import FileUpload from './FileUpload'
 
-import data from '../data'
+import data from '../../assets/data'
 
 
 const styles = {
@@ -46,23 +46,23 @@ class InputForm extends React.Component {
 
     runSample = (event) => {
         event.preventDefault()
-        this.props.handleLocation(data.url.sample_results)
+        this.props.handleLocation(data.url.sample_results, data.sample_ndex)
     }
 
 
     validate = (formData) => {
         try {
-            const ndex = formData.get('ndex')
-            if (ndex.length !== 36){
-                throw new Error("NDEx UUID is invalid")
-            }
-
             const snp = this.state.snp_level_summary;
             if (snp === undefined){
                 throw new Error("No SNP Level Summary provided.")
             }
             formData.append('snp_level_summary', snp)
             
+            const ndex = formData.get('ndex')
+            if (ndex.length !== 36) {
+                throw new Error("NDEx UUID is invalid")
+            }
+
             const alpha = formData.get('alpha')
             if (alpha === '') {
                 formData.delete('alpha')
@@ -128,6 +128,7 @@ class InputForm extends React.Component {
             running
         } = this.state;
 
+        
         const subheader = <div style={styles.subheader}>
             <p>{data.subheader}</p>
            
@@ -198,7 +199,8 @@ class InputForm extends React.Component {
                     <p style={{float: 'left', fontSize: '14px'}}>
                         <a href="/" onClick={this.runSample}>Example output</a> (schizophrenia on hg18)
                     </p>
-                    <Button color="primary"
+                    <Button 
+                        color="primary"
                         variant="contained" 
                         style={styles.run_button} 
                         type="submit"

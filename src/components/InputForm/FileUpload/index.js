@@ -1,8 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 import {FormHelperText, Button, Checkbox, FormControlLabel} from '@material-ui/core'
-import Row from './Row'
-import data from '../data'
+import Row from '../Row'
+import data from '../../../assets/data'
 
 const styles = {
     snp_input: {

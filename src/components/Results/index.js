@@ -5,7 +5,7 @@ import BackIcon from '@material-ui/icons/Close'
 import axios from 'axios'
 
 import ResultTable from './ResultTable'
-// import NetworkView from './NetworkView'
+import NetworkView from './NetworkView'
 
 const styles = {
     floatRight: {
@@ -27,7 +27,14 @@ const styles = {
     }
 }
 
-function downloadAsCsv(data){
+const COLUMN_MAP = {
+    negativelog: 'Gene Input Heat',
+    finalheat: 'Final Heat'
+}
+
+const TOP_N = 20;
+
+function downloadAsCsv(columns, data){
     var csv = 'Name,Final Heat\n';
     data.forEach(function (row) {
         csv += row['id'] + ',' + row['heat'];
@@ -48,7 +55,6 @@ class Results extends React.Component {
             columns: [],
             parameters: {}
         }
-        window.results = this;
         this.handleDelete = this.handleDelete.bind(this)
     }
 
@@ -64,10 +70,14 @@ class Results extends React.Component {
                         return;
                     }
                 }
-                
+                clearInterval(this.timer)
+
+                // console.log(res)
                 let response = res.data;
                 if (response.hasOwnProperty('result')){
                     this.handleResponse(response)
+                }else{
+                    throw new Error("No 'result' in " + JSON.stringify(response));
                 }
             }).catch(error => {
                 clearInterval(this.timer)
@@ -77,12 +87,16 @@ class Results extends React.Component {
     }
 
     handleResponse= response => {
-        clearInterval(this.timer)
         let result = response["result"];
         let parameters = response["parameters"];
         let columns = result['resultkey'];
         let resultvalue = result["resultvalue"];
+        let ndex = parameters['ndex']
 
+        // Map column names to something prettier
+        columns = columns.map(a => COLUMN_MAP[a]).filter(a => a !== undefined)
+
+        // Organize data in readable manner: {id:, col1:, col2:}
         let data = Object.keys(resultvalue).map(key => {
             const row = {id: key};
             for (var i = 0; i < columns.length; i++)
@@ -90,7 +104,11 @@ class Results extends React.Component {
             return row;
         })
 
-        this.setState({ data, columns, parameters })
+        data.sort((a, b) => b[COLUMN_MAP['finalheat']] - a[COLUMN_MAP['finalheat']])
+        let topNodes = data.slice(0, TOP_N)
+        let searchString = topNodes.map(a => a['id']).join(' ')
+
+        this.setState({ data, columns, parameters, searchString, ndex })
     }
 
     componentWillUnmount() {
@@ -103,7 +121,7 @@ class Results extends React.Component {
     }
 
     render() {
-        const { data, columns } = this.state;
+        const { data, columns, searchString, ndex } = this.state;
         if (this.props.location === null){
             return (<div>
                 <p>Unkown location: {this.props.location})...</p>
@@ -117,17 +135,26 @@ class Results extends React.Component {
                 <a href="/" style={styles.back}><BackIcon /></a>
             </div>
             :
-            <ResultInfo data={data} columns={columns} handleBack={this.props.handleBack}/>            
+            <div className="results">
+                <NetworkView
+                    ndex={ndex}
+                    searchString={searchString}
+                    />
+                <ResultInfo 
+                    data={data} 
+                    columns={columns}/>
+                <ButtonBar 
+                    handleDownload={() => downloadAsCsv(data)}
+                    handleBack={this.props.handleBack} />         
+            </div>
         );
     }
 }
 
-function ResultInfo(props) {
+const ResultInfo = (props) => {
     const {
-        // ndex,
         data, 
-        columns,
-        handleBack} = props;
+        columns} = props;
 
     const column_arr = columns.map(name => {
         return { id: name, numeric: true, disablePadding: true, label: name }
@@ -136,40 +163,36 @@ function ResultInfo(props) {
     column_arr.splice(0, 0, {id: 'id', numeric: false, disablePadding: true, label: "Name"})
 
     return (
-    <div>
-        {/* <NetworkView
-            data={data}
-        /> */}
-
-
         <ResultTable
             data={data}
             columns={column_arr} 
-            orderBy="finalheat"
+            orderBy={COLUMN_MAP['finalheat']}
           />
-        <div>
-            <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">
-                <Button variant="contained" onClick={() => {  
-                    if (window.confirm("All results will be lost. Be sure to export your data to CSV or NDEx! \n Continue?")){
-                        handleBack()
-                    }
-                }}>Back
+    );
+}
+
+const ButtonBar = ({handleBack, handleDownload}) => {
+    return (<div>
+        <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">
+            <Button variant="contained" onClick={() => {
+                if (window.confirm("All results will be lost. Be sure to export your data to CSV or NDEx! \n Continue?")) {
+                    handleBack()
+                }
+            }}>Back
                 </Button>
-            </Tooltip>
-            <Button variant="contained" style={styles.floatRight} onClick={() => downloadAsCsv(data)}>
-                Export to CSV
+        </Tooltip>
+        <Button variant="contained" style={styles.floatRight} onClick={handleDownload}>
+            Export to CSV
             </Button>
 
-            <Tooltip title="Coming Soon!" placement="top">
-                <span style={styles.floatRight}>
-                    <Button variant="contained" color="primary" disabled>
-                        View on NDEx
+        <Tooltip title="Coming Soon!" placement="top">
+            <span style={styles.floatRight}>
+                <Button variant="contained" color="primary" disabled>
+                    View on NDEx
                     </Button>
-                </span>
-            </Tooltip>
-        </div>
-    </div>
-    );
+            </span>
+        </Tooltip>
+    </div>)
 }
 
 export default Results;

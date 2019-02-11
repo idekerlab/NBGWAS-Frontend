@@ -1,8 +1,8 @@
 import React from 'react'
 import {TextField, ExpansionPanel, ExpansionPanelSummary, Typography} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Row from './Row'
-import data from '../data'
+import Row from '../Row'
+import data from '../../../assets/data'
 
 const styles = {
     advanced_content: {
