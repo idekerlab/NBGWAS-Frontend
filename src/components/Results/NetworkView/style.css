@@ -4,3 +4,18 @@
     border: black solid 2px;
     position: relative;
 }
+
+.cytoscape-toolbar {
+    z-index: 100;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(200, 200, 200, .4);
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.cytoscape-toolbar *{
+    width: 100%;
+}
