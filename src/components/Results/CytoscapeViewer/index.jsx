@@ -34,6 +34,7 @@ const getNodeFillMapping = () => {
             "properties": {
                 "NODE_TRANSPARENCY": "100",
                 "NODE_FILL_COLOR": "#00FF00",
+                "NODE_SELECTED_PAINT": "#A000CA"
             },
             "mappings": {
                 "NODE_FILL_COLOR": {
@@ -65,7 +66,6 @@ const CytoscapeViewer = props => {
     const niceCX = utils.rawCXtoNiceCX(network)
     console.log('NICE ===', niceCX)
 
-    
     const attributeNameMap = {}
     const elements = cx2js.cyElementsFromNiceCX(niceCX, attributeNameMap)
     const style = cx2js.cyStyleFromNiceCX(niceCX, attributeNameMap)
@@ -73,7 +73,6 @@ const CytoscapeViewer = props => {
     console.log('CYJS ===', elements, style)
 
     const elementsArray = [...elements.nodes, ...elements.edges]
-
     return (
         <CytoscapeComponent
             className="cytoscape-component"
@@ -81,7 +80,7 @@ const CytoscapeViewer = props => {
             layout={{ name: 'cose' }}
             style={{ width: '100%', height: '100%' }}
             stylesheet={style}
-            cy={props.cy}
+            cy={cy => {window.cy = cy}}
         />
     )
 }

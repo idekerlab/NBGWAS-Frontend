@@ -16,7 +16,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "deploy": "npm run build && rsync -rlzv --progress --exclude=.git --exclude=.vscode `pwd`/build/ nbgwas.ucsd.edu:/var/www/html/",
-    "stage": "npm run build && rsync -rlzv --progress --exclude=.git --exclude=.vscode `pwd`/build/ nbgwas-stage.ucsd.edu:/var/www/html/",
+    "stage": "rsync -rlzv --progress --exclude=.git --exclude=.vscode `pwd`/build/ nbgwas-stage.ucsd.edu:/var/www/html/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -30,6 +30,7 @@
     "not op_mini all"
   ],
   "proxy": "http://nbgwas-stage.ucsd.edu",
+	"homepage": ".",
   "devServer": {
     "proxy": {
       "/nagadata/**": "http://nbgwas-stage.ucsd.edu" 

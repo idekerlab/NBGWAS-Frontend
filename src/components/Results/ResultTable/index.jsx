@@ -130,7 +130,7 @@ class EnhancedTable extends React.Component {
     isSelected = id => this.state.selected.indexOf(id) !== -1;
 
     render() {
-        const { data, columns, classes } = this.props;
+        const { data, columns, classes, handleClick } = this.props;
         const { order, orderBy, rowsPerPage, page } = this.state;
         if (data === undefined){
             return <p>No data found. Is the url correct?</p>
@@ -155,7 +155,7 @@ class EnhancedTable extends React.Component {
                                         <TableRow
                                             className={classes.row}
                                             hover
-                                            onClick={event => this.handleClick(event, n.id)}
+                                            onClick={event => handleClick(event, n.id)}
                                             role="checkbox"
                                             tabIndex={-1}
                                             key={n.id}

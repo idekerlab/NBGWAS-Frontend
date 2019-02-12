@@ -28,7 +28,7 @@ const styles = {
     }
 }
 
-const TOP_N = 500;
+const TOP_N = 100;
 
 function downloadAsCsv(columns, data){
     var csv = 'Name,Final Heat\n';
@@ -117,6 +117,11 @@ class Results extends React.Component {
         this.props.handleDelete(index);
     }
 
+    rowClick = (event, name) => {
+        window.cy.elements().unselect()
+        window.cy.elements('node[name = "' + name + '"]').select()
+    }
+
     render() {
         const { data, columns, geneList, ndex } = this.state;
         if (this.props.location === null){
@@ -139,7 +144,8 @@ class Results extends React.Component {
                     />
                 <ResultInfo 
                     data={data} 
-                    columns={columns}/>
+                    columns={columns}
+                    handleClick={this.rowClick}/>
                 <ButtonBar 
                     handleDownload={() => downloadAsCsv(data)}
                     handleBack={this.props.handleBack} />         
@@ -151,7 +157,8 @@ class Results extends React.Component {
 const ResultInfo = (props) => {
     const {
         data, 
-        columns} = props;
+        columns,
+        handleClick} = props;
 
     const column_arr = columns.map(name => {
         return { id: name, numeric: true, disablePadding: true, label: name }
@@ -164,6 +171,7 @@ const ResultInfo = (props) => {
             data={data}
             columns={column_arr} 
             orderBy={DATA.columns['finalheat']}
+            handleClick={handleClick}
           />
     );
 }
