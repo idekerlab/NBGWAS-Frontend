@@ -104,7 +104,7 @@ class EnhancedTable extends React.Component {
             order: 'desc',
             orderBy: props.orderBy,
             page: 0,
-            rowsPerPage: 25,
+            rowsPerPage: 10,
         };
     }
 
@@ -178,7 +178,7 @@ class EnhancedTable extends React.Component {
                     </Table>
                 </div>
                 <TablePagination
-                    rowsPerPageOptions={[25, 50, 100]}
+                    rowsPerPageOptions={[10, 25, 50]}
                     component="div"
                     count={data.length}
                     rowsPerPage={rowsPerPage}

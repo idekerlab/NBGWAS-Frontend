@@ -14,7 +14,7 @@ const NavBar = () => {
             <Toolbar className="navbar">
                 <img className="logo" src={logo} alt="NAGA Logo" height="match-parent" />
                 <Typography variant="title" style={{flexGrow: 1}} color="inherit">
-                    {data.title}
+                    {data.title} <span className="version">v{data.version}</span>
                 </Typography>
                 <Button
                     href={data.url.data}

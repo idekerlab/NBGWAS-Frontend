@@ -1,0 +1,50 @@
+.cytoscape-toolbar-group {
+    display: flex;
+    padding: 4px;
+    /* border-right: 2px solid gray */
+}
+
+.toolbar-separator {
+    min-height: 15px;
+    width: 2px;
+    background: gray;
+}
+
+.cytoscape-toolbar {
+    display: flex;
+    z-index: 1; /* Stay on top */
+    background-color:#EEE; /* Black */
+}
+
+.cytoscape-toolbar button {
+    border: none;
+    background: transparent;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.cytoscape-toolbar button:hover {
+    background: rgba(0, 0, 0, .1);
+    cursor:pointer;
+}
+
+.cytoscape-toolbar button:focus {
+    outline: none;
+}
+
+.cytoscape-toolbar-input {
+    padding: 5px;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+#topN {
+    width: 50px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    margin-left: 5px;
+}

@@ -28,14 +28,14 @@ const styles = {
     }
 }
 
-const TOP_N = 100;
-
 function downloadAsCsv(columns, data){
-    var csv = 'Name,Final Heat\n';
-    data.forEach(function (row) {
-        csv += row['id'] + ',' + row['heat'];
-        csv += "\n";
+    
+    var csv = "Name," + columns.join(",") + "\n";
+    const lines = data.map(row => {
+        const rowInfo = columns.map(name => row[name]);
+        return row['id'] + ',' + rowInfo.join(',');
     });
+    csv += lines.join("\n")
     var hiddenElement = document.createElement('a');
     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
     hiddenElement.target = '_blank';
@@ -50,7 +50,6 @@ class Results extends React.Component {
             data: null,
             columns: [],
             parameters: {},
-            geneList: [],
             ndex: null
         }
         this.handleDelete = this.handleDelete.bind(this)
@@ -93,19 +92,15 @@ class Results extends React.Component {
 
         // Map column names to something prettier
         columns = columns.map(a => DATA.columns[a]).filter(a => a !== undefined)
-
         // Organize data in readable manner: {id:, col1:, col2:}
-        let data = Object.keys(resultvalue).map(key => {
+        let data = Object.keys(resultvalue).map((key, n) => {
             const row = {id: key};
             for (var i = 0; i < columns.length; i++)
                 row[columns[i]] = resultvalue[key][i];
             return row;
         })
 
-        data.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']])
-        let geneList = data.slice(0, TOP_N)
-
-        this.setState({ data, columns, parameters, geneList, ndex })
+        this.setState({ data, columns, parameters, ndex })
     }
 
     componentWillUnmount() {
@@ -118,12 +113,14 @@ class Results extends React.Component {
     }
 
     rowClick = (event, name) => {
-        window.cy.elements().unselect()
-        window.cy.elements('node[name = "' + name + '"]').select()
+        const node = window.cy.elements('node[name = "' + name + '"]');
+        alert(JSON.stringify(node.data(), null, 2))
+        //window.cy.elements().unselect()
+        //.select()
     }
 
     render() {
-        const { data, columns, geneList, ndex } = this.state;
+        const { data, columns, ndex } = this.state;
         if (this.props.location === null){
             return (<div>
                 <p>Unkown location: {this.props.location})...</p>
@@ -140,14 +137,14 @@ class Results extends React.Component {
             <div className="results">
                 <NetworkView
                     ndex={ndex}
-                    geneList={geneList}
+                    genes={data}
                     />
                 <ResultInfo 
-                    data={data} 
+                    data={data}
                     columns={columns}
                     handleClick={this.rowClick}/>
                 <ButtonBar 
-                    handleDownload={() => downloadAsCsv(data)}
+                    handleDownload={() => downloadAsCsv(columns, data)}
                     handleBack={this.props.handleBack} />         
             </div>
         );
@@ -189,14 +186,6 @@ const ButtonBar = ({handleBack, handleDownload}) => {
         <Button variant="contained" style={styles.floatRight} onClick={handleDownload}>
             Export to CSV
             </Button>
-
-        <Tooltip title="Coming Soon!" placement="top">
-            <span style={styles.floatRight}>
-                <Button variant="contained" color="primary" disabled>
-                    View on NDEx
-                    </Button>
-            </span>
-        </Tooltip>
     </div>)
 }
 
