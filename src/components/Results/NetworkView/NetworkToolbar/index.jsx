@@ -98,7 +98,7 @@ class NetworkToolbar extends React.Component {
                     <input
                         name="topN"
                         id="topN"
-                        type="number" 
+                        type="number"
                         value={this.props.topN} 
                         min={0}
                         max={300}
