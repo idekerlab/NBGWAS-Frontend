@@ -3,31 +3,21 @@ import { TextField, FormControl, Select, MenuItem, InputLabel,
     Button, CardHeader, FormHelperText, LinearProgress } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import axios from 'axios'
+
 import Row from './Row'
 import AdvancedPanel from './AdvancedPanel'
 import FileUpload from './FileUpload'
 
-import data from '../../assets/data'
+import DATA from '../../assets/data'
+import './style.css'
 
-
-const styles = {
-    header: {
-        padding: '4px 6px 4px 6px',
-        marginBottom: '20px',
-    },
-    run_button: {
-        float: 'right',
-    },
-    form: {
-        overflow: 'auto',
-        padding: '10px',
-        position: 'relative'
-    },
-    subheader: {
-        backgroundColor: '#fafafa',
-        padding: '2px 6px 2px 6px',
-    }
-}
+/**
+ * author: Brett Settle
+ * 
+ * InputForm component for entering parameters to be passed to NAGA REST API
+ * Results must be submitted as a form. Once a request is submitted, the task ID
+ * is propagated up to the parent container, and the tab is switched to Results
+ */
 
 class InputForm extends React.Component {
     constructor(props){
@@ -35,7 +25,7 @@ class InputForm extends React.Component {
         this.state = {
             complete: 0,
             running: false,
-            ...data.defaults};
+            ...DATA.defaults};
 
         this.file_input = null;
     }
@@ -45,10 +35,9 @@ class InputForm extends React.Component {
     }
 
     runSample = (event) => {
-        event.preventDefault()
-        this.props.handleLocation(data.url.sample_results)
+        event.preventDefault();
+        this.props.handleLocation(DATA.url.sample_results)
     }
-
 
     validate = (formData) => {
         try {
@@ -99,7 +88,7 @@ class InputForm extends React.Component {
             }
         }
         
-        axios.post(data.url.endpoint, formData, config)
+        axios.post(DATA.url.endpoint, formData, config)
             .then(res => {
                 if (res['data'] === 'failed') {
                     console.log(res)
@@ -125,23 +114,23 @@ class InputForm extends React.Component {
             window,
             alpha,
             complete,
-            running
+            running,
         } = this.state;
 
+        const pubLink = DATA.url.publication && <span> as in <a href={DATA.url.publication}>the publication</a></span>
         
-        const subheader = <div style={styles.subheader}>
-            <p>{data.subheader}</p>
-           
-            <p>To generate the sample results{/* as in <a href={data.url.publication}>the publication</a>*/}
-            , use this provided <a href={data.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
+
+        const subheader = <div className='subheader'>
+            <p>{DATA.subheader}</p>
+            <p>To generate the sample results{pubLink}, use this provided <a href={DATA.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
             Use the sample NDEx network, and set the protein coding to hg18.</p>
         </div>
 
         const ndex_help = <span>
-            <span>{data.help.ndex} </span>For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
+            <span>{DATA.help.ndex} </span>For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
                event.preventDefault();
-               this.setState({ndex: data.sample_ndex})
-           }}>{data.sample_ndex}</a>
+                this.setState({ ndex: DATA.sample_ndex})
+            }}>{DATA.sample_ndex}</a>
         </span>
 
         if (running === true){
@@ -152,23 +141,20 @@ class InputForm extends React.Component {
         }
 
         return (
-            <form style={styles.form} onSubmit={this.onSubmit}>
+            <form className='form' onSubmit={this.onSubmit}>
                 <CardHeader
-                    style={styles.header}
-                    title={data.title}
+                    className='header'
+                    title={DATA.title}
                     subheader={subheader}/>
                 <FileUpload 
                     onChange={(f) => this.setState({snp_level_summary: f})}
                     name="snp_level_summary"
                     value={snp_level_summary}
-                    // ref={comp => {
-                    //     this.file_input = comp
-                    // }}
                 />
                 <Row>
                     <TextField
                         name="ndex"
-                        label={data.text.ndex}
+                        label={DATA.text.ndex}
                         helperText={ndex_help}
                         value={ndex}
                         onChange={this.handleChange}
@@ -177,7 +163,7 @@ class InputForm extends React.Component {
                 </Row>
                 <Row>
                     <FormControl fullWidth>
-                        <InputLabel htmlFor="protein_coding">{data.text.protein_coding}</InputLabel>
+                        <InputLabel htmlFor="protein_coding">{DATA.text.protein_coding}</InputLabel>
                         <Select
                             name="protein_coding"
                             value={protein_coding}
@@ -185,7 +171,7 @@ class InputForm extends React.Component {
                             <MenuItem value="hg18">hg18</MenuItem>
                             <MenuItem value="hg19">hg19</MenuItem>
                         </Select>
-                        <FormHelperText>{data.help.protein_coding}</FormHelperText>
+                        <FormHelperText>{DATA.help.protein_coding}</FormHelperText>
                     </FormControl>
                 </Row>
                 <Row>
@@ -196,16 +182,17 @@ class InputForm extends React.Component {
                     />
                 </Row> 
                 <Row>
-                    <p style={{float: 'left', fontSize: '14px'}}>
+                    <p className='button-bar-text'>
                         <a href="/" onClick={this.runSample}>Example output</a> (schizophrenia on hg18)
                     </p>
+                    
                     <Button 
                         color="primary"
                         variant="contained" 
-                        style={styles.run_button} 
+                        className='run-button'
                         type="submit"
                         >
-                        {data.text.run}<ArrowForwardIcon/>
+                        {DATA.text.run}<ArrowForwardIcon/>
                     </Button>
                 </Row>
             </form>

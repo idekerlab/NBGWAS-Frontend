@@ -8,6 +8,12 @@ import logo from '../../assets/images/naga logo.png'
 import data from '../../assets/data';
 import './style.css'
 
+/**
+ * author: Brett Settle
+ * 
+ * Static component for simple NavBar. Has no access to state or other components
+ */
+
 const NavBar = () => {
     return (
         <AppBar position="fixed">

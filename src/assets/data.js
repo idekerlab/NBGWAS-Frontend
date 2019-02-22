@@ -1,3 +1,5 @@
+// JSON structured collection of strings, links, and default values to be used throughout the app
+
 const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
@@ -10,7 +12,11 @@ const data = {
         swagger: '/rest/v1',
         data: '/nagadata',
         endpoint: "/rest/v1/snp_analyzer",
-        // publication: "/",
+        ndex_query: 'http://www.ndexbio.org/v2/search/network/{networkid}/interconnectquery?save=false',
+        poll_cytoscape: 'http://localhost:1234/v1',
+        open_in_cytoscape: 'http://localhost:1234/cyndex2/v1/networks/cx',
+        open_in_ndex: 'http://ndexbio.org/v2/network',
+        // publication: "/", // ADD link to publication to generate a link in the app
     },
     defaults: {
         ndex: '',
@@ -25,7 +31,8 @@ const data = {
         alpha: 'Restart Probability (Leave blank to auto-generate)',
         window: 'Window Size',
         protein_coding: 'Protein Coding',
-        run: 'Run'
+        run: 'Run',
+        view_previous: 'View previous result by task ID',
     },
     help: {
         snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the following names: chromosome, basepair, pvalue',

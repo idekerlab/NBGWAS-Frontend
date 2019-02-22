@@ -3,18 +3,7 @@ import axios from 'axios'
 import {FormHelperText, Button, Checkbox, FormControlLabel} from '@material-ui/core'
 import Row from '../Row'
 import data from '../../../assets/data'
-
-const styles = {
-    snp_input: {
-        display: 'none'
-    },
-    file_info: {
-        paddingLeft: '15px',
-        fontSize: '14px',
-        margin: '0px',
-        alignSelf: 'center'
-    },
-}
+import './style.css'
 
 function formatBytes(a, b) { if (0 === a) return "0 Bytes"; var c = 1024, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], f = Math.floor(Math.log(a) / Math.log(c)); return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f] }
 
@@ -24,9 +13,9 @@ class FileUpload extends React.Component {
         super(props)
         this.state = {
             sample: false,
-            progress: 0
+            progress: -1,
+            sampleFile: null
         }
-        this.sampleFile = null;
     }
 
     handleRef = comp => {
@@ -50,15 +39,15 @@ class FileUpload extends React.Component {
             var buffer = e.srcElement.result;//arraybuffer object
             const f = new File([buffer], "schizophrenia.txt");
             if (main.state.sample){
+                main.setState({ sampleFile: f })
                 main.props.onChange(f);
-                this.sampleFile = f;
             }
         });
     }
 
     loadSample = (url) => {
-        if (this.sampleFile !== null){
-            this.props.onChange(this.sampleFile)
+        if (this.state.sampleFile !== null){
+            this.props.onChange(this.state.sampleFile)
             return
         }
         const main = this;
@@ -79,26 +68,29 @@ class FileUpload extends React.Component {
 
     sampleToggled = ev => {
         if (ev.target.checked){
-            this.setState({ sample: true});
+            this.setState({ sample: true, progress: 0});
             const url = data.url.sample_file; //"/samples/schizophrenia.txt"
             this.loadSample(url);
         } else{
             this.props.onChange(null);
-            this.setState({sample: false})
+            this.setState({sample: false, progress: -1})
         }
     }
 
     render(){
         const {sample, progress} = this.state;
         const {value} = this.props;
+        const message = "File " + (value !== null ? 
+            "Uploaded(" + formatBytes(value.size) + ")" :
+            "Uploading... (" + progress + "%)");
 
         return (<Row>
-            <div style={{ display: 'flex' }}>
+            <div className='upload-container'>
                 <div>
                     <input
                         accept="text/*"
                         id="fileUpload"
-                        style={styles.snp_input}
+                        className='snp_input'
                         onChange={(e) => this.props.onChange(e.target.files[0])}
                         type="file"
                     />
@@ -110,7 +102,7 @@ class FileUpload extends React.Component {
                     </label>
                     
                 </div>
-                <p style={styles.file_info}>
+                <p className='file_info'>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -123,14 +115,9 @@ class FileUpload extends React.Component {
 
                 </p>
             </div>
-            {(progress > 0 && progress < 100) &&
+            {(progress >= 0 || value != null) &&
                 <FormHelperText>
-                    File Uploading... ({progress}%)
-                </FormHelperText>
-            }
-            {(value !== null) &&
-                <FormHelperText>
-                    File Uploaded ({formatBytes(value.size)})
+                    {message}
                 </FormHelperText>
             }
             <FormHelperText>{data.help.snp_level_summary}</FormHelperText>

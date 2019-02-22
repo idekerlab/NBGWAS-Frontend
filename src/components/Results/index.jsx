@@ -7,26 +7,8 @@ import axios from 'axios'
 import DATA from '../../assets/data'
 import ResultTable from './ResultTable'
 import NetworkView from './NetworkView'
+import './style.css'
 
-const styles = {
-    floatRight: {
-        float: 'right',
-        marginLeft: '10px'
-    },
-    closeButton: {
-        float:'right'
-    },
-    errorBox: {
-        background: '#ff000020',
-        paddingLeft: '7px'
-    },
-    back: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        padding: '5px'
-    }
-}
 
 function downloadAsCsv(columns, data){
     
@@ -43,6 +25,12 @@ function downloadAsCsv(columns, data){
     hiddenElement.click();
 }
 
+/**
+ * author: Brett Settle
+ * 
+ * Result Component to get results from a task UUID and display them
+ * in a NetworkView and a ResultTable
+ */
 class Results extends React.Component {
     constructor(props) {
         super(props)
@@ -69,7 +57,6 @@ class Results extends React.Component {
                 }
                 clearInterval(this.timer)
 
-                // console.log(res)
                 let response = res.data;
                 if (response.hasOwnProperty('result')){
                     this.handleResponse(response)
@@ -86,19 +73,25 @@ class Results extends React.Component {
     handleResponse= response => {
         let result = response["result"];
         let parameters = response["parameters"];
+        
         let columns = result['resultkey'];
         let resultvalue = result["resultvalue"];
-        let ndex = parameters['ndex']
+        let ndex = parameters['ndex'];
 
-        // Map column names to something prettier
-        columns = columns.map(a => DATA.columns[a]).filter(a => a !== undefined)
         // Organize data in readable manner: {id:, col1:, col2:}
-        let data = Object.keys(resultvalue).map((key, n) => {
+        let data = Object.keys(resultvalue).map(key => {
             const row = {id: key};
-            for (var i = 0; i < columns.length; i++)
-                row[columns[i]] = resultvalue[key][i];
+            for (var i = 0; i < columns.length; i++){
+                const colName = DATA.columns[columns[i]];
+                if (colName){
+                    row[colName] = resultvalue[key][i];
+                }else{
+                    row[columns[i]] = resultvalue[key][i];
+                }
+            }
             return row;
         })
+        columns = columns.map(name => DATA.columns[name]).filter(name => name !== undefined)
 
         this.setState({ data, columns, parameters, ndex })
     }
@@ -113,8 +106,8 @@ class Results extends React.Component {
     }
 
     rowClick = (event, name) => {
-        const node = window.cy.elements('node[name = "' + name + '"]');
-        alert(JSON.stringify(node.data(), null, 2))
+        // const node = window.cy.elements('node[name = "' + name + '"]');
+        // alert(JSON.stringify(node.data(), null, 2))
         //window.cy.elements().unselect()
         //.select()
     }
@@ -131,7 +124,7 @@ class Results extends React.Component {
             <div>
                 <p>Waiting for result (task UUID: '{id}')</p>
                 <LinearProgress />
-                <a href="/" style={styles.back}><BackIcon /></a>
+                <a href="/" className='back'><BackIcon /></a>
             </div>
             :
             <div className="results">
@@ -183,7 +176,7 @@ const ButtonBar = ({handleBack, handleDownload}) => {
             }}>Back
                 </Button>
         </Tooltip>
-        <Button variant="contained" style={styles.floatRight} onClick={handleDownload}>
+        <Button variant="contained" className='float-right' onClick={handleDownload}>
             Export to CSV
             </Button>
     </div>)

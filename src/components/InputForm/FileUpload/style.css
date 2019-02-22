@@ -1,0 +1,15 @@
+.snp_input {
+    display: none
+}
+
+.upload-container {
+    display: flex;
+    align-items: center;
+}
+
+.file_info {
+    padding-left: 15px;
+    font-size: 14px;
+    margin: 0px;
+    align-self: center
+}

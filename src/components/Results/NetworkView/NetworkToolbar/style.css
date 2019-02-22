@@ -1,7 +1,8 @@
 .cytoscape-toolbar-group {
     display: flex;
     padding: 4px;
-    /* border-right: 2px solid gray */
+    align-items: center;
+    
 }
 
 .toolbar-separator {
@@ -12,8 +13,9 @@
 
 .cytoscape-toolbar {
     display: flex;
-    z-index: 1; /* Stay on top */
-    background-color:#EEE; /* Black */
+    z-index: 1;
+    background-color:#EEE;
+    font-size: 14px;
 }
 
 .cytoscape-toolbar button {
@@ -44,7 +46,6 @@
     width: 50px;
     border: 1px solid #CCC;
     border-radius: 4px;
-    font-size: 14px;
     text-align: center;
     margin-left: 5px;
 }

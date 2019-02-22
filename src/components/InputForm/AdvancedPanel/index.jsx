@@ -3,12 +3,7 @@ import {TextField, ExpansionPanel, ExpansionPanelSummary, Typography} from '@mat
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Row from '../Row'
 import data from '../../../assets/data'
-
-const styles = {
-    advanced_content: {
-        padding: '20px'
-    },
-}
+import './style.css'
 
 const AdvancedPanel = (props) => {
     return (
@@ -16,7 +11,7 @@ const AdvancedPanel = (props) => {
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Advanced Settings (optional)</Typography>
             </ExpansionPanelSummary>
-            <div style={styles.advanced_content}>
+            <div className='advanced-content'>
                 <Row>
                     <TextField
                         name="window"

@@ -12,38 +12,35 @@ import './style.css'
 const utils = new CyNetworkUtils()
 const cx2js = new CxToJs(utils)
 
-const NDEX_INTERCONNECT_URL = 'http://www.ndexbio.org/v2/search/network/{networkid}/interconnectquery?save=false'
-
 function makeNodeAttributes(nodes, geneList) {
-
     const geneMap = {}
     geneList.forEach((gene, i) => {
-        gene.rank = i + 1
+        gene.finalrank = i + 1
         geneMap[gene.id] = gene;
     })
-    const attrs = [];
-    nodes.forEach(node => {
-        const gene = geneMap[node['n']] || {rank: -1, [DATA.columns['finalheat']]: 0};
 
-        const heat_attr = {
+    const nodesFiltered = nodes.filter(node => node['n'] in geneMap)
+    
+    const heat_attrs = nodesFiltered.map(node => {
+        return  {
             "po": node['@id'],
             "n": 'finalheat',
-            "v":  gene[DATA.columns['finalheat']],
+            "v":  geneMap[node['n']][DATA.columns['finalheat']],
             "d": "double"
-        }
-        const rank_attr = {
+        };
+    });
+    const rank_attrs = nodesFiltered.map(node => {
+        return {
             "po": node['@id'],
             "n": 'finalrank',
-            "v": gene.rank,
+            "v": geneMap[node['n']].finalrank,
             "d": "integer"
-        }
-        attrs.push(heat_attr, rank_attr)
+        };
     })
-    return attrs;
+    return [...heat_attrs, ...rank_attrs];
 }
 
-
-const getNodeFillMapping = (min, max) => {
+const getNodeFillMapping = (name, min, max) => {
     return [
         {
             "properties_of": "nodes:default",
@@ -55,87 +52,127 @@ const getNodeFillMapping = (min, max) => {
             "mappings": {
                 "NODE_FILL_COLOR": {
                     "type": "CONTINUOUS",
-                    "definition": "COL=finalheat,T=double,L=0=#0066CC,E=0=#FFFFFF,G=0=#FFFFFF,OV=0=" + min + ",L=1=#FF0000,E=1=#FF0000,G=1=#FFFF00,OV=1=" + max
+                    "definition": "COL=" + name + ",T=integer,L=0=#FF0000,E=0=#FF0000,G=0=#FF0000,OV=0=" + min + ",L=1=#FFFFFF,E=1=#FFFFFF,G=1=#FFFFFF,OV=1=" + max
                 }
             }
-        }
+        },
+        {
+            "properties_of": "edges:default",
+            "properties": {
+                "EDGE_LINE_TYPE": "SOLID",
+                "EDGE_PAINT": "#323232",
+                "EDGE_SELECTED_PAINT": "#FF0000",
+                "EDGE_SOURCE_ARROW_SELECTED_PAINT": "#FFFF00",
+                "EDGE_SOURCE_ARROW_SHAPE": "NONE",
+                "EDGE_SOURCE_ARROW_UNSELECTED_PAINT": "#000000",
+                "EDGE_STROKE_SELECTED_PAINT": "#FF0000",
+                "EDGE_STROKE_UNSELECTED_PAINT": "#848484",
+                "EDGE_TARGET_ARROW_SELECTED_PAINT": "#FFFF00",
+                "EDGE_TARGET_ARROW_SHAPE": "NONE",
+                "EDGE_TARGET_ARROW_UNSELECTED_PAINT": "#000000",
+                "EDGE_UNSELECTED_PAINT": "#404040",
+            },
+            "dependencies": {
+                "arrowColorMatchesEdge": "false"
+            }
+        },
     ]
 }
 
 function cleanup(network, geneList){
-    const vals = geneList.map(gene => gene[DATA.columns['finalheat']])
+    const unstyledNetwork = network;//.filter(aspect => Object.keys(aspect)[0] !== 'cyVisualProperties')
+    const nodeAspects = unstyledNetwork.filter(aspect => Object.keys(aspect)[0] === 'nodes').map(asp => asp['nodes'])
+    const nodes = [].concat(...nodeAspects)
+    console.log("Network has " + nodes.length + " nodes")
+    const nodeAttributes = makeNodeAttributes(nodes, geneList);
+    console.log("Adding " + nodeAttributes.length + " attributes")
+    unstyledNetwork.splice(2, 0, { nodeAttributes })
+
+    console.log("Adding CyVis")
+    const name = "finalrank"
+    const vals = nodeAttributes.filter(attr => attr['n'] === name).map(attr => attr['v'])
     const min = Math.min(...vals)
     const max = Math.max(...vals)
-
-    const unstyledNetwork = network;//.filter(aspect => Object.keys(aspect)[0] !== 'cyVisualProperties')
-    console.log("Getting nodes")
-    const nodes = unstyledNetwork.filter(aspect => Object.keys(aspect)[0] === 'nodes')[0]['nodes']
-    console.log("Making node attributes")
-    unstyledNetwork.splice(2, 0, { nodeAttributes: makeNodeAttributes(nodes, geneList) })
-    console.log("Adding CyVis")
-    unstyledNetwork.splice(-2, 0, { cyVisualProperties: getNodeFillMapping(min, max) })
+    const cyVisualProperties = getNodeFillMapping(name, min, max);
+    unstyledNetwork.splice(-2, 0, { cyVisualProperties })
     console.log("Done")
     return unstyledNetwork;
 }
 
 class NetworkView extends React.Component {
-    MAX_GENES = 200;
+    initialTopN = 20
     constructor(props){
         super(props);
         this.state = {
             network: null,
             searchString: '',
-            topN: 0,
+            loading: false,
+            genes: props.genes.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']]),
         }
+        this.doPreview = this.doPreview.bind(this);
     }
 
-    componentWillMount(){
-        const { ndex, genes } = this.props;
-        // IMPORTANT: Sort the genes by finalheat
-        genes.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']])
+    onPreview = (num) => {
+        if (this.state.loading){
+            return;
+        }
+        this.setState({loading: true})
+        this.doPreview(num)
+    }
+
+    componentDidMount = () => {
+        this.onPreview(this.initialTopN)
+    }
+
+    async doPreview(num) {
+        const { ndex } = this.props;
+        const { genes } = this.state;
         
-        const geneList = genes.slice(0, this.MAX_GENES)
-        const searchString = geneList.map(a => a.id).join(' ')
-        const ndex_url = NDEX_INTERCONNECT_URL.replace('{networkid}', ndex)
-        axios.post(ndex_url, { searchString })
+        const geneList = genes.slice(0, num)
+        const searchString = geneList.map(a => 'nodeName:"' + a.id + '"').join(' OR ')
+        const ndex_url = DATA.url.ndex_query.replace('{networkid}', ndex)
+        const body = {
+            searchString,
+            searchDepth: 1,
+            edgeLimit: 50000,
+            errorWhenLimitIsOver: true,
+            // directOnly: true,
+        };
+
+        axios.post(ndex_url, body)
             .then(resp => {
-                const network = cleanup(resp.data, geneList);
+                const network = cleanup(resp.data, genes);
                 
                 const niceCX = utils.rawCXtoNiceCX(network)
                 if (niceCX === null){
                     throw new Error("Failed to convert raw CX to niceCX: " + JSON.stringify(network))
                 }
+
                 const elements = cx2js.cyElementsFromNiceCX(niceCX, {})
                 const style = cx2js.cyStyleFromNiceCX(niceCX, {})
+
+                // Clear style and nodes/edges
+                window.cy.elements().remove()
+                window.cy.style()
 
                 // Load network outside of react state?
                 window.cy.add(elements)
                 window.cy.style(style)
                 const layout = window.cy.layout({'name': 'grid'})
                 layout.run();
-
-                const topN = geneList.length
-                this.setState({network, searchString, topN})
+                
+                this.setState({network, searchString, loading: false})
             })
             .catch(e => {
                 alert(e);
+                this.setState({ loading: false })
             })
-    }
-
-    handleChange = (name, val) => {
-
-        this.setState({[name]: val})
-
-        if (name === 'topN' && !Number.isNaN(Number.parseInt(val))){
-            window.cy.elements('node[finalrank <= ' + val + ']').show()
-            window.cy.elements('node[finalrank > ' + val + ']').hide()
-        }
     }
 
     render(){
         const {
             network,
-            topN
+            loading
         } = this.state;
 
 
@@ -152,8 +189,9 @@ class NetworkView extends React.Component {
             />
             <NetworkToolbar 
                 network={network}
-                topN={topN}
-                handleChange={this.handleChange}
+                onPreview={this.onPreview}
+                initialTopN={this.initialTopN}
+                loading={loading}
             />
         </div>
         );

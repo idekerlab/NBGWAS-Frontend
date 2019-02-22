@@ -1,0 +1,11 @@
+.float-right {
+    float: right;
+    margin-left: 10px
+}
+
+.back {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px
+}
