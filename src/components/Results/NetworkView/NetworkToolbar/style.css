@@ -13,6 +13,7 @@
 
 .cytoscape-toolbar {
     display: flex;
+    flex-flow: wrap;
     z-index: 1;
     background-color:#EEE;
     font-size: 14px;
@@ -32,6 +33,16 @@
 
 .cytoscape-toolbar button:focus {
     outline: none;
+}
+
+.btn-disabled {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
+.exporters img {
+    max-height: 35px;
 }
 
 .cytoscape-toolbar-input {

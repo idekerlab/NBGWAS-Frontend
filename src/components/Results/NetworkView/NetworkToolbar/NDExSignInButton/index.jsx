@@ -1,7 +1,7 @@
 import React from 'react'
 import { DialogContent, Dialog, DialogTitle, 
     Button, Grid, Paper, TextField, FormControl } from '@material-ui/core'
-import OpenInNewIcon from "@material-ui/icons/OpenInNew"
+import OpenInNDExIcon from './images/open_in_ndex.png'
 import GoogleLogin from 'react-google-login';
 
 import GoogleLogo from './images/google-logo.svg'
@@ -171,7 +171,7 @@ export default class NDExSignInButton extends React.Component {
 
         return (
             <div>
-                <button onClick={this.open}><OpenInNewIcon /></button>
+                <button onClick={this.open}><img src={OpenInNDExIcon} alt="Open in NDEx" /></button>
                 <Dialog
                     open={open}
                     onClose={this.handleClose}

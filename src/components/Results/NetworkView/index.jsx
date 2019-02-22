@@ -80,13 +80,15 @@ const getNodeFillMapping = (name, min, max) => {
 }
 
 function cleanup(network, geneList){
-    const unstyledNetwork = network;//.filter(aspect => Object.keys(aspect)[0] !== 'cyVisualProperties')
-    const nodeAspects = unstyledNetwork.filter(aspect => Object.keys(aspect)[0] === 'nodes').map(asp => asp['nodes'])
+    let modifiedNetwork = network;
+    // modifiedNetwork = modifiedNetwork.filter(aspect => Object.keys(aspect)[0] !== 'cyVisualProperties');
+    // Update metaData: cyVisualProperties += 2, update/add nodeAttributes
+    const nodeAspects = modifiedNetwork.filter(aspect => Object.keys(aspect)[0] === 'nodes').map(asp => asp['nodes'])
     const nodes = [].concat(...nodeAspects)
     console.log("Network has " + nodes.length + " nodes")
     const nodeAttributes = makeNodeAttributes(nodes, geneList);
     console.log("Adding " + nodeAttributes.length + " attributes")
-    unstyledNetwork.splice(2, 0, { nodeAttributes })
+    modifiedNetwork.splice(2, 0, { nodeAttributes })
 
     console.log("Adding CyVis")
     const name = "finalrank"
@@ -94,9 +96,11 @@ function cleanup(network, geneList){
     const min = Math.min(...vals)
     const max = Math.max(...vals)
     const cyVisualProperties = getNodeFillMapping(name, min, max);
-    unstyledNetwork.splice(-2, 0, { cyVisualProperties })
+    modifiedNetwork.splice(-2, 0, { cyVisualProperties })
     console.log("Done")
-    return unstyledNetwork;
+
+    // window.network = modifiedNetwork;
+    return modifiedNetwork;
 }
 
 class NetworkView extends React.Component {
