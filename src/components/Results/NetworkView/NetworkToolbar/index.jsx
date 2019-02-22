@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 
-import { Toolbar, Button, Typography, CircularProgress } from '@material-ui/core';
+import { Toolbar, Button, Typography, CircularProgress, Dialog, DialogContent, DialogContentText } from '@material-ui/core';
 
 import AspectRatioIcon from '@material-ui/icons/AspectRatio'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
@@ -12,6 +12,7 @@ import ColorLegend from './ColorLegend';
 import NDExSignInButton from './NDExSignInButton'
 import DATA from '../../../../assets/data';
 import './style.css'
+
 
 // const NDEX_LOAD_NETWORK = 'http://ndexbio.org/v2/network'
 
@@ -24,18 +25,6 @@ const openInCytoscape = (cx) => {
         })
 }
 
-const openInNDEx = (auth, cx) => {
-    axios.post(DATA.url.open_in_ndex, cx, { 
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-    })
-    .then(resp => {
-        console.log(resp)
-    })
-}
-
 const searchPortal = () => {
     alert("Opening portal search")
 }
@@ -46,6 +35,8 @@ class NetworkToolbar extends React.Component {
         this.state = {
             cytoscape_running: false,
             topN: props.initialTopN || 10,
+            auth: "",
+            ndexUrl: ""
         }
     }
 
@@ -61,6 +52,7 @@ class NetworkToolbar extends React.Component {
     componentDidMount() {
         this.interval = setInterval(() => this.pollCytoscape(), 5000);
     }
+
     componentWillUnmount() {
         clearInterval(this.interval);
     }
@@ -72,7 +64,8 @@ class NetworkToolbar extends React.Component {
     render(){
         const {
             cytoscape_running,
-            topN
+            topN, 
+            auth,
         } = this.state;
 
         const {
@@ -82,18 +75,28 @@ class NetworkToolbar extends React.Component {
         return (
         <Toolbar
             className='cytoscape-toolbar'>
-            <div className="cytoscape-toolbar-group exporters">
-                {cytoscape_running &&
-                    <button 
-                    style={{color: "orange"}}
-                        onClick={() => openInCytoscape(network)}>
-                        <OpenInNewIcon />
-                    </button>
-                }
-                <NDExSignInButton 
-                        onLoginSuccess={(auth) => openInNDEx(auth, network)}
+            {auth && 
+                <SaveToNDExModal 
+                    auth={auth}
+                    cx={network}
+                    handleClose={() => this.setState({auth: null})}
                 />
+            }
+            <div className="cytoscape-toolbar-group exporters">
+                <button 
+                    style={{color: cytoscape_running ? "orange" : "gray"}}
+                    disabled={!cytoscape_running}
+                    onClick={() => {
+                        if (cytoscape_running){
+                            openInCytoscape(network)
+                        }
+                    }}>
+                    <OpenInNewIcon />
+                </button>
                 
+                <NDExSignInButton 
+                        onLoginSuccess={(auth) => this.setState({auth})}
+                />
                 <button onClick={searchPortal}><SearchIcon /></button>
             </div>
             <div className="toolbar-separator" />
@@ -125,6 +128,76 @@ class NetworkToolbar extends React.Component {
                 </Button>
             </div>
         </Toolbar>)
+    }
+}
+
+class SaveToNDExModal extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            open: false,
+            networkUrl: ""
+        };
+    }
+
+    handleOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
+
+    saveToNDEx = () => {
+        const {auth, cx} = this.props;
+
+        axios.post(DATA.url.open_in_ndex, cx, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': auth
+            }
+        })
+            .then(resp => {
+                const networkUrl = resp.data.replace("/v2/", "/#/")
+                this.setState({networkUrl})
+            })
+    }
+
+    render() {
+        const {
+            open,
+            networkUrl
+        } = this.state;
+
+        return (
+            <div>
+                <Dialog
+                    open={open}
+                    onClose={this.handleClose}
+                    aria-labelledby="form-dialog-title"
+                >
+                    <DialogContent>
+                        <DialogContentText>
+                            Now that you're logged in, you can save the network to your NDEx account
+                        </DialogContentText>
+                    {networkUrl ? 
+                        <Button 
+                            href={networkUrl}
+                            target="_blank"
+                        >
+                            Open in NDEx
+                        </Button>
+                    :
+                        <Button
+                            onClick={this.saveToNDEx}
+                            >
+                            Save to my account
+                        </Button>
+                    }
+                    </DialogContent>
+                </Dialog>
+            </div>
+        );
     }
 }
 

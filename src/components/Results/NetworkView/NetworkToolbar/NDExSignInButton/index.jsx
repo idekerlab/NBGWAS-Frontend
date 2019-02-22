@@ -1,6 +1,8 @@
 import React from 'react'
-import { DialogContent, Dialog, DialogTitle, DialogContentText, DialogActions, Button, Grid, Paper, TextField, FormControl, FormGroup } from '@material-ui/core'
+import { DialogContent, Dialog, DialogTitle, 
+    Button, Grid, Paper, TextField, FormControl } from '@material-ui/core'
 import OpenInNewIcon from "@material-ui/icons/OpenInNew"
+import GoogleLogin from 'react-google-login';
 
 import GoogleLogo from './images/google-logo.svg'
 import GoogleLogoDisabled from './images/google-logo-disabled.svg'
@@ -9,78 +11,49 @@ import './style.css'
 import Axios from 'axios';
 
 const NDEX_USER_VALIDATION = "http://ndexbio.org/v2/user?valid=true"
+// testing
+const googleClientId = '802839698598-mrrd3iq3jl06n6c2fo1pmmc8uugt9ukq.apps.googleusercontent.com'
 
-const styles = {
-    grid: {
-        padding: '10px',
-        textAlign: 'center',
-    },
-    googleLogo: { 
-        height: '70px', 
-        width: '70px',
-        maxHeight: '100%',
-        maxWidth: '100%'
-    },
-    googleButtonDisabled: {
-        color: '#B6B6B6',
-        backgroundColor: '#FFF',
-        cursor: 'not-allowed'
-    },
-    googleSignInText: {
-        marginTop: '1.5em',
-        marginLeft: '3em',
-        marginRight: '3em'
-    }
-}
-
-function GoogleSignOn({googleSSO}) {
-    const signIn = () => {
-        alert("SIGNING IN")
-    }
+function GoogleSignOn({googleSSO, onLoginSuccess}) {
+    const clsName = googleSSO ? "google-sign-in-button" : 'google-sign-in-button googleButtonDisabled'
+    const title = googleSSO ? "Sign in your Google account" : "Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser." +
+    "To use the Google Sign In feature you can do one of two things:" + 
+    "1. Add 'accounts.google.com' to the list of websites allowed to write / read THIRD - PARTY COOKIES, or" + 
+    "2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings.";
+    const logo = googleSSO ? GoogleLogo : GoogleLogoDisabled;
 
     return (
         <div className="google-button">
-            {googleSSO ? 
-                <Button
-                    className="google-sign-in-button"
-                    type="button"
-                    onClick={signIn}
+            <GoogleLogin
+                clientId={googleClientId}
+                render={renderProps => (
+                    <Button id="googleSignInButtonId"
+                        className={clsName}
+                        title={title}
+                        onClick={renderProps.onClick}
                     >
                         <span className="google-sign-in-button-span">
-                            <img src={GoogleLogo}
-                                    alt=""
-                                    style={styles.googleLogo} 
-                                    />
-                            <div style={styles.googleSignInText}
+                            <img src={logo}
+                                alt=""
+                                className='googleLogo'
+                            />
+                            <div className='googleSignInText'
                             >Sign In / Sign Up with Google</div>
                         </span>
-                </Button>
-            :
-                <Button id="googleSignInButtonId"
-                    className="google-sign-in-button"
-                    style={styles.googleButtonDisabled}
-                    title="Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser.
-                    To use the Google Sign In feature you can do one of two things:
-                    1. Add 'accounts.google.com' to the list of websites allowed to write/read THIRD-PARTY COOKIES, or
-                    2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings."
-                    >
-                    <span className="google-sign-in-button-span">
-                        <img src={GoogleLogoDisabled}
-                                alt=""
-                                style={styles.googleLogo} 
-                            />
-                        <div style={styles.googleSignInText}
-                        >Sign In / Sign Up with Google</div>
-                    </span>
-                </Button>
-            }
+                    </Button>
+                )}
+                buttonText="Login"
+                onSuccess={onLoginSuccess}
+                onFailure={(ev) => { console.log(ev)}}
+            />
+            {/*  */}
         </div>
     )
 }
 
 class CredentialsSignOn extends React.Component {
     state = {
-        errors: []
+        error: null
     }
 
     submit = (event) => {
@@ -95,22 +68,20 @@ class CredentialsSignOn extends React.Component {
 
         Axios.get(NDEX_USER_VALIDATION, config)
         .then(resp => {
-            console.log(resp)
             this.props.onLoginSuccess(auth)
+            this.props.handleClose();
         }).catch(err => {
-            alert(err)
+            console.log(err)
+            this.setState({error: err.response.data.message})
         })
     }
 
     render(){
         const {
-            errors,
-            username,
-            password
+            error,
         } = this.state;
 
-        const button_cls = errors ||
-            (!username.$valid || !password.$valid) ?
+        const button_cls = error ?
             'btn btn-primary disabled' : 'btn btn-primary';
 
         return (
@@ -118,54 +89,53 @@ class CredentialsSignOn extends React.Component {
                 name="basicAuthSignIn"
                 onSubmit={this.submit}
                 >
-                <FormControl>
-                    <TextField name="accountName" type="text" className="form-control" placeholder="Account Name"
-                        required title="" autoComplete="username" />
+                <FormControl className="form-control">
+                    <TextField 
+                        name="accountName" type="text" placeholder="Account Name"
+                        required title="" autoComplete="username"/>
                 </FormControl>
-                <FormControl className="form-group">
-                    <TextField name="password" type="password" className="form-control" placeholder="Password"
+                <FormControl className="form-control">
+                    <TextField name="password" type="password" placeholder="Password"
                         required title="" autoComplete="password"/>
                 </FormControl>
-                <div>
-                    <a href="/"
-                    // ng-show="showForgotPassword" ng-click="forgotPassword()"
-                    >Forgot Password?</a>
+                
+                <div className="ndex-account-links">
+                    <div>
+                        <a href="/"
+                        >Forgot Password?</a>
+                    </div>
+                    <div>
+                        <span>Need an account? </span>
+                        <a href="/"
+                        >Click here to sign up!</a>
+                    </div>
                 </div>
 
-
-                <div ng-show="showSignUp">
-                    <br />
-                    <span ng-bind-html="needAnAccount"></span>
-                    <a href="/"
-                    // ng-click="openBasicAuthSignUp()"
-                    >Click here to sign up!</a>
-                </div>
-
-                {errors && 
-                    <div
-                        className='text-danger'
-                    >
+                {error && 
+                    <div className='text-danger'>
                         <br />
                         <strong><span
                         // style="font-size: 1.1em"
-                        >{errors}</span></strong>
+                        >{error}</span></strong>
                     </div>
                 }
 
-                <div
-                    className="AlignRight"
-                >
+                <div className="credentials-button-container">
                     {this.props.handleClose &&
-                        <Button className="btn btn-default" onClick={this.props.handleClose} type="button" >
+                        <Button className="btn btn-default"
+                            variant="contained"
+                            onClick={this.props.handleClose} type="button" >
                             Cancel
                         </Button>
                     }
 
                     <Button 
                         className={button_cls}
+                        variant="contained"
+                        color="primary"
                         type="submit"
                         >
-                        Confirm
+                        Sign In
                     </Button>
                 </div>
             </form>
@@ -173,7 +143,7 @@ class CredentialsSignOn extends React.Component {
     }
 }
 
-export class NDExSignInButton extends React.Component {
+export default class NDExSignInButton extends React.Component {
     state = {
         open: false,
     };
@@ -192,7 +162,7 @@ export class NDExSignInButton extends React.Component {
 
     render() {
         const {
-            open
+            open,
         } = this.state;
 
         const {
@@ -238,42 +208,38 @@ export class NDExSignIn extends React.Component {
 
         return (
             <div>
-                <DialogTitle id="form-dialog-title">NDEx Sign In</DialogTitle>
+                <DialogTitle id="form-dialog-title">Sign in to your NDEx Account</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
+                    {/* <DialogContentText>
                         Log in to your NDEx account with Google or a username and password.
-                    </DialogContentText>
+                    </DialogContentText> */}
                     <div className="NDExSignInContainer">
                         <Grid container spacing={8}>
-                            <Grid item xs={6}>
-                                <Paper style={styles.grid}>
-                                    <GoogleSignOn 
-                                        googleSSO={googleSSO}
-
-                                    />
+                            <Grid item xs={6} className="grid">
+                                <Paper className='grid-paper'>
+                                    <div className="grid-content">
+                                        <GoogleSignOn 
+                                            googleSSO={googleSSO}
+                                            onLoginSuccess={onLoginSuccess}
+                                            handleClose={handleClose}
+                                        />
+                                    </div>
                                 </Paper>
                             </Grid>
-                            <Grid item xs={6}>
-                                <Paper style={styles.grid}>
-                                    <CredentialsSignOn
-                                        onLoginSuccess={onLoginSuccess}
-                                    />
+                            <Grid item xs={6} className="grid">
+                                <Paper className='grid-paper'>
+                                    <div className="grid-content">
+                                        <CredentialsSignOn
+                                            onLoginSuccess={onLoginSuccess}
+                                            handleClose={handleClose}
+                                        />
+                                    </div>
                                 </Paper>
                             </Grid>
                         </Grid>
                     </div>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                        </Button>
-                    <Button onClick={handleClose} color="primary">
-                        Sign in
-                        </Button>
-                </DialogActions>
             </div>
         );
     }
 }
-
-export default NDExSignInButton;

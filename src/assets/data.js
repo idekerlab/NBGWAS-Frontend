@@ -47,7 +47,8 @@ const data = {
     columns: {
         negativelog: 'Gene Input Heat',
         finalheat: 'Final Heat'
-    }
+    },
+    
     
 }
 
