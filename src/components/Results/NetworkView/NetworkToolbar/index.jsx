@@ -1,14 +1,13 @@
 import React from 'react'
 import axios from 'axios'
 
-import { Toolbar, Button, Typography, CircularProgress, Dialog, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
+import { Toolbar, Button, Typography, CircularProgress } from '@material-ui/core';
 
 import AspectRatioIcon from '@material-ui/icons/AspectRatio'
 import SearchIcon from '@material-ui/icons/Search'
 import OpenInCytoscapeIcon from '../../../../assets/images/open_in_cytoscape.png'
 
-
-
+import NDExSaveModal from './NDExSaveModal'
 import LayoutMenu from './LayoutMenu'
 import ColorLegend from './ColorLegend';
 import NDExSignInButton from './NDExSignInButton'
@@ -35,8 +34,7 @@ class NetworkToolbar extends React.Component {
         this.state = {
             cytoscape_running: false,
             topN: props.initialTopN || 10,
-            auth: "",
-            ndexUrl: ""
+            profile: null,
         }
     }
 
@@ -61,11 +59,15 @@ class NetworkToolbar extends React.Component {
         this.setState({ [event.target.name] : event.target.value})
     }
 
+    onLoginSuccess = (profile) => {
+        this.setState({ profile })
+    }
+
     render(){
         const {
             cytoscape_running,
             topN, 
-            auth,
+            profile,
         } = this.state;
 
         const {
@@ -77,11 +79,11 @@ class NetworkToolbar extends React.Component {
         return (
         <Toolbar
             className='cytoscape-toolbar'>
-            {auth && 
-                <SaveToNDExModal 
-                    auth={auth}
+            {profile && 
+                <NDExSaveModal 
+                    profile={profile}
                     cx={network}
-                    handleClose={() => this.setState({auth: null})}
+                    handleClose={() => this.setState({profile: null})}
                 />
             }
             <div className="cytoscape-toolbar-group exporters">
@@ -96,7 +98,7 @@ class NetworkToolbar extends React.Component {
                 </button>
                 
                 <NDExSignInButton 
-                    onLoginSuccess={(auth) => this.setState({auth})}
+                    onSuccess={this.onLoginSuccess}
                 />
                 <button onClick={searchPortal}><SearchIcon /></button>
             </div>
@@ -128,76 +130,6 @@ class NetworkToolbar extends React.Component {
                 </Button>
             </div>
         </Toolbar>)
-    }
-}
-
-class SaveToNDExModal extends React.Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            networkUrl: ""
-        };
-    }
-
-    handleOpen = () => {
-        // this.setState({ open: true });
-    };
-
-    handleClose = () => {
-        this.props.handleClose()//setState({ open: false });
-    };
-
-    saveToNDEx = () => {
-        const {auth, cx} = this.props;
-
-        axios.post(DATA.url.open_in_ndex, cx, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': auth
-            }
-        })
-            .then(resp => {
-                const networkUrl = resp.data.replace("/v2/", "/#/")
-                this.setState({networkUrl})
-            })
-    }
-
-    render() {
-        const {
-            networkUrl
-        } = this.state;
-
-        return (
-            <div>
-                <Dialog
-                    open={true}
-                    onClose={this.handleClose}
-                    aria-labelledby="form-dialog-title"
-                >
-                    <DialogContent>
-                        <DialogContentText>
-                            Now that you're logged in, you can save the network to your NDEx account
-                        </DialogContentText>
-                        <DialogActions>
-                            {networkUrl ? 
-                                <Button 
-                                    href={networkUrl}
-                                    target="_blank"
-                                >
-                                    Open in NDEx
-                                </Button>
-                            :
-                                <Button
-                                    onClick={this.saveToNDEx}
-                                    >
-                                    Save to my account
-                                </Button>
-                            }
-                        </DialogActions>
-                    </DialogContent>
-                </Dialog>
-            </div>
-        );
     }
 }
 

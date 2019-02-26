@@ -18,7 +18,9 @@ const NavBar = () => {
     return (
         <AppBar position="fixed">
             <Toolbar className="navbar">
-                <img className="logo" src={logo} alt="NAGA Logo" height="match-parent" />
+                <a href="/">
+                    <img className="logo" src={logo} alt="NAGA Logo" height="match-parent" />
+                </a>
                 <Typography variant="title" style={{flexGrow: 1}} color="inherit">
                     {data.title} <span className="version">v{data.version}</span>
                 </Typography>

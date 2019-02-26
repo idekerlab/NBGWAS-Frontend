@@ -14,9 +14,24 @@ const NDEX_USER_VALIDATION = "http://ndexbio.org/v2/user?valid=true"
 // testing
 const googleClientId = '802839698598-mrrd3iq3jl06n6c2fo1pmmc8uugt9ukq.apps.googleusercontent.com'
 
-function GoogleSignOn({googleSSO, onLoginSuccess}) {
+function GoogleSignOn({googleSSO, onSuccess, onFailure}) {
+    
+    const onLoginSuccess = (resp) => {
+        const token = resp.tokenObj.token_type + ' ' + resp.tokenObj.access_token
+        const profile = {
+            name: resp.profileObj.name,
+            image: resp.profileObj.imageUrl,
+            authorization: {
+                type: 'google',
+                token
+            }
+        }
+
+        onSuccess(profile)
+    }
+    
     const clsName = googleSSO ? "google-sign-in-button" : 'google-sign-in-button googleButtonDisabled'
-    const title = googleSSO ? "Sign in your Google account" : "Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser." +
+    const title = googleSSO ? "Sign in with your Google account" : "Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser." +
     "To use the Google Sign In feature you can do one of two things:" + 
     "1. Add 'accounts.google.com' to the list of websites allowed to write / read THIRD - PARTY COOKIES, or" + 
     "2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings.";
@@ -28,6 +43,7 @@ function GoogleSignOn({googleSSO, onLoginSuccess}) {
                 clientId={googleClientId}
                 render={renderProps => (
                     <Button id="googleSignInButtonId"
+                        disabled={!googleSSO}
                         className={clsName}
                         title={title}
                         onClick={renderProps.onClick}
@@ -44,9 +60,8 @@ function GoogleSignOn({googleSSO, onLoginSuccess}) {
                 )}
                 buttonText="Login"
                 onSuccess={onLoginSuccess}
-                onFailure={(ev) => { console.log(ev)}}
+                onFailure={onFailure}
             />
-            {/*  */}
         </div>
     )
 }
@@ -68,11 +83,23 @@ class CredentialsSignOn extends React.Component {
 
         Axios.get(NDEX_USER_VALIDATION, config)
         .then(resp => {
-            this.props.onLoginSuccess(auth)
-            this.props.handleClose();
+            const profile = {
+                name: resp.data.firstName,
+                image: resp.data.image,
+                authorization: {
+                    type: 'ndex',
+                    token: resp.config.headers['Authorization']
+                }
+            }
+            this.props.onSuccess(profile)
+
         }).catch(err => {
             console.log(err)
-            this.setState({error: err.response.data.message})
+            if ('response' in err){
+                this.setState({error: err.response.data.message})
+            }else {
+                this.setState({error: "Unknown error"})
+            }
         })
     }
 
@@ -143,49 +170,6 @@ class CredentialsSignOn extends React.Component {
     }
 }
 
-export default class NDExSignInButton extends React.Component {
-    state = {
-        open: false,
-    };
-
-    handleOpen = () => {
-        this.setState({ open: true });
-    };
-
-    handleClose = () => {
-        this.setState({ open: false });
-    };
-
-    open = () => {
-        this.setState({ open: true })
-    }
-
-    render() {
-        const {
-            open,
-        } = this.state;
-
-        const {
-            onLoginSuccess
-        } = this.props;
-
-        return (
-            <div>
-                <button onClick={this.open}><img src={OpenInNDExIcon} alt="Open in NDEx" /></button>
-                <Dialog
-                    open={open}
-                    onClose={this.handleClose}
-                    aria-labelledby="form-dialog-title"
-                >
-                    <NDExSignIn 
-                        handleClose={this.handleClose}
-                        onLoginSuccess={onLoginSuccess}
-                    />
-                </Dialog>
-            </div>
-        );
-    }
-}
 
 export class NDExSignIn extends React.Component {
     constructor(props) {
@@ -193,17 +177,27 @@ export class NDExSignIn extends React.Component {
         this.state = {
             username: "",
             googleSSO: true,
+            erros: [],
+        }
+    }
+
+    onFailure = (err) => {
+        if ('details' in err && err.details.startsWith('Not a valid origin for the client: http://localhost:')){
+            this.setState({googleSSO: false})
+        }else{
+            this.setState({errors: err})
         }
     }
 
     render() {
         const {
-            googleSSO
+            googleSSO,
+            errors
         } = this.state;
 
         const {
             handleClose,
-            onLoginSuccess
+            onSuccess
         } = this.props
 
         return (
@@ -220,8 +214,8 @@ export class NDExSignIn extends React.Component {
                                     <div className="grid-content">
                                         <GoogleSignOn 
                                             googleSSO={googleSSO}
-                                            onLoginSuccess={onLoginSuccess}
-                                            handleClose={handleClose}
+                                            onSuccess={onSuccess}
+                                            onFailure={this.onFailure}
                                         />
                                     </div>
                                 </Paper>
@@ -230,7 +224,7 @@ export class NDExSignIn extends React.Component {
                                 <Paper className='grid-paper'>
                                     <div className="grid-content">
                                         <CredentialsSignOn
-                                            onLoginSuccess={onLoginSuccess}
+                                            onSuccess={onSuccess}
                                             handleClose={handleClose}
                                         />
                                     </div>
@@ -238,7 +232,52 @@ export class NDExSignIn extends React.Component {
                             </Grid>
                         </Grid>
                     </div>
+                    <div className="sign-in-error">
+                        {JSON.stringify(errors)}
+                    </div>
                 </DialogContent>
+            </div>
+        );
+    }
+}
+
+export default class NDExSignInButton extends React.Component {
+    state = {
+        open: false,
+    };
+
+    handleOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
+
+    onSuccess = (auth) => {
+        this.handleClose()
+        this.props.onSuccess(auth)
+    }
+
+    render() {
+        const {
+            open,
+        } = this.state;
+
+        return (
+            <div>
+                <button onClick={this.handleOpen}><img src={OpenInNDExIcon} alt="Open in NDEx" /></button>
+                <Dialog
+                    className="sign-in-container"
+                    open={open}
+                    onClose={this.handleClose}
+                    aria-labelledby="form-dialog-title"
+                >
+                    <NDExSignIn
+                        handleClose={this.handleClose}
+                        onSuccess={this.onSuccess}
+                    />
+                </Dialog>
             </div>
         );
     }
