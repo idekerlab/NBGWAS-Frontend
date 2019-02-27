@@ -1,6 +1,7 @@
 import React from 'react'
 import {MenuItem, Button, Menu} from '@material-ui/core'
 
+const TIMEOUT = 1000;
 
 class LayoutMenu extends React.Component {
     state = {
@@ -24,7 +25,12 @@ class LayoutMenu extends React.Component {
         if (layout.hasOwnProperty('name')) {
             const lay = window.cy.layout(layout)
             lay.run();
+
+            setTimeout(function () {
+                lay.stop();
+            }, TIMEOUT);
         }
+        
         this.setState({ anchorEl: null });
     };
 

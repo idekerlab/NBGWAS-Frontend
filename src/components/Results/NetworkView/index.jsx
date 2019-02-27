@@ -70,13 +70,17 @@ class NetworkView extends React.Component {
                 // Load network outside of react state?
                 window.cy.add(elements)
                 window.cy.style(style)
-                const layout = window.cy.layout({'name': 'cose'})
+                const layout = window.cy.layout({'name': 'grid'})
                 layout.run();
                 
                 this.setState({network: cxNetwork, searchString, loading: false})
             })
-            .catch(e => {
-                alert(e);
+            .catch(err => {
+                if (err.response.status === 500){
+                    alert("Too many nodes to run query. Decrease your top node count and try again.")
+                }else{
+                    alert(err)
+                }
                 this.setState({ loading: false })
             })
     }

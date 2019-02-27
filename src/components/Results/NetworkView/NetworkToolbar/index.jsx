@@ -111,7 +111,12 @@ class NetworkToolbar extends React.Component {
             <ColorLegend />
             <div className="toolbar-separator" />
             <div className="cytoscape-toolbar-group naga">
-                <div className="cytoscape-toolbar-input">
+                <form className="cytoscape-toolbar-input"
+                        onSubmit={(ev) => {
+                            ev.preventDefault();
+                            this.props.onPreview(topN)
+                        }
+                    }>
                     <label htmlFor="topN">Top Nodes:</label>
                     <input
                         name="topN"
@@ -121,13 +126,15 @@ class NetworkToolbar extends React.Component {
                         min={0}
                         max={500}
                         onChange={this.handleChange}/>
-                </div>
-                <Button disabled={this.props.loading} onClick={() => this.props.onPreview(topN)}>
-                    {this.props.loading ?
-                        <CircularProgress size={20}/>:
-                        <Typography>Preview</Typography>
-                    }
-                </Button>
+                    <Button 
+                        disabled={this.props.loading} 
+                        type="submit">
+                        {this.props.loading ?
+                            <CircularProgress size={20} /> :
+                            <Typography>Preview</Typography>
+                        }
+                    </Button>
+                </form>
             </div>
         </Toolbar>)
     }
