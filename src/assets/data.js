@@ -4,7 +4,7 @@ const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
-    version: '0.0.1',
+    version: '0.1.0',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
         sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
@@ -27,10 +27,10 @@ const data = {
     },
     text: {
         snp_level_summary: 'Upload GWAS Summary Statistics',
-        ndex: 'Network UUID',
+        ndex: 'Network UUID in NDEx',
         alpha: 'Restart Probability (Leave blank to auto-generate)',
         window: 'Window Size',
-        protein_coding: 'Protein Coding',
+        protein_coding: 'Genome for Protein Coding Region',
         run: 'Run',
         view_previous: 'View previous result by task ID',
     },
