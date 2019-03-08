@@ -29,12 +29,12 @@ const data = {
     // Add protein coding files here.
     protein_codings: [{
         name: "hg18",
-        path: "hg18.txt",
+        path: "hg18",
         description: ""
         },
         {
         name: "hg19",
-        path: "hg19.txt",
+        path: "hg19",
         description: ""
     }],
     text: {

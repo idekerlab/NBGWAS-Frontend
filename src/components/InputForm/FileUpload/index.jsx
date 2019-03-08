@@ -46,6 +46,7 @@ class FileUpload extends React.Component {
     }
 
     loadSample = (url) => {
+        console.log("Loading sample")
         if (this.state.sampleFile !== null){
             this.props.onChange(this.state.sampleFile)
             return
@@ -59,7 +60,9 @@ class FileUpload extends React.Component {
             }
         })
         .then(resp => {
+            console.log("Converting to blob...")
             const blob = new Blob([resp.data], { type: 'application/text' })
+            console.log("Converting to File...")
             main.blobToFile(blob);
         }).catch(err => {
             

@@ -16,7 +16,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "npm run build && rsync -rlzv --progress --exclude=.git --exclude=.vscode `pwd`/build/ nbgwas.ucsd.edu:/var/www/html/",
+    "deploy": "scp -r `pwd`/build nbgwas.ucsd.edu:~/frontend",
     "stage": "scp -r `pwd`/build nbgwas-stage.ucsd.edu:~/frontend",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
