@@ -35,6 +35,22 @@
     outline: none;
 }
 
+.cytoscape-toolbar a {
+    border: none;
+    background: transparent;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.cytoscape-toolbar a:hover {
+    background: rgba(0, 0, 0, .1);
+    cursor:pointer;
+}
+
+.cytoscape-toolbar a:focus {
+    outline: none;
+}
+
 .btn-disabled {
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
@@ -42,7 +58,7 @@
 }
 
 .exporters img {
-    max-height: 35px;
+    max-height: 40px;
 }
 
 .cytoscape-toolbar-input {

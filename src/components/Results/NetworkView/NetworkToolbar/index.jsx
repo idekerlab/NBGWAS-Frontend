@@ -4,8 +4,8 @@ import axios from 'axios'
 import { Toolbar, Button, Typography, CircularProgress } from '@material-ui/core';
 
 import AspectRatioIcon from '@material-ui/icons/AspectRatio'
-import SearchIcon from '@material-ui/icons/Search'
 import OpenInCytoscapeIcon from '../../../../assets/images/open_in_cytoscape.png'
+import OpenInSearchIcon from '../../../../assets/images/open_in_search.png'
 
 import NDExSaveModal from './NDExSaveModal'
 import LayoutMenu from './LayoutMenu'
@@ -22,12 +22,6 @@ const openInCytoscape = (cx) => {
         .then(resp => {
             console.log(resp)
         })
-}
-
-const searchPortal = (searchString) => {
-    console.log(searchString)
-    
-    alert("Opening portal search: " + searchString)
 }
 
 class NetworkToolbar extends React.Component {
@@ -47,13 +41,6 @@ class NetworkToolbar extends React.Component {
         }).catch(e => {
             // Ignore error
         })
-    }
-
-    doSearch = () => {
-        const nodes = window.cy.nodes()
-        const nodeNames = nodes.map(a => a.data('name'))
-        const searchString = nodeNames.join(' ')
-        searchPortal(searchString);
     }
 
     componentDidMount() {
@@ -110,7 +97,9 @@ class NetworkToolbar extends React.Component {
                 <NDExSignInButton 
                     onSuccess={this.onLoginSuccess}
                 />
-                    <a href={DATA.url.open_in_search + "?genes=" + geneNames} target="_blank" rel="noopener noreferrer"><SearchIcon /></a>
+                    <a href={DATA.url.open_in_search + "?genes=" + geneNames} target="_blank" rel="noopener noreferrer">
+                        <img src={OpenInSearchIcon} alt="Find Related Networks" />
+                    </a>
             </div>
             <div className="toolbar-separator" />
             <div className="cytoscape-toolbar-group network-tools">
