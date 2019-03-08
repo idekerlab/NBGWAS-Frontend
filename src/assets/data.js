@@ -4,7 +4,7 @@ const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
-    version: '0.1.0',
+    version: '0.1.1',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
         sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
@@ -16,6 +16,7 @@ const data = {
         poll_cytoscape: 'http://localhost:1234/v1',
         open_in_cytoscape: 'http://localhost:1234/cyndex2/v1/networks/cx',
         open_in_ndex: 'http://ndexbio.org/v2/network',
+        open_in_search: "http://secret.ndexbio.org/cytosearch"
         // publication: "/", // ADD link to publication to generate a link in the app
     },
     defaults: {
@@ -24,6 +25,11 @@ const data = {
         protein_coding: 'hg18',
         alpha: '',
         window: 10000
+    },
+    // Add protein coding files here.
+    protein_codings: {
+        hg18: "hg18",
+        hg19: "hg19",
     },
     text: {
         snp_level_summary: 'Upload GWAS Summary Statistics',
@@ -36,7 +42,6 @@ const data = {
     },
     help: {
         snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the following names: chromosome, basepair, pvalue',
-        ndex: 'NDEx (http://www.ndexbio.org) UUID of network to load.',
         alpha: 'Sets propagation constant alpha with allowed values between 0 and 1, representing the restart ' +
             'probability of walking to network neighbors as opposed to reseting to the original distribution. Larger ' +
             'values increases the likelihood of starting with the original distribution again. ',

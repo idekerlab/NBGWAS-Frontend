@@ -127,7 +127,7 @@ class InputForm extends React.Component {
         </div>
 
         const ndex_help = <span>
-            <span>{DATA.help.ndex} </span>For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
+            The UUID of the reference network on <a href="http://www.ndexbio.org">NDEx</a>. For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
                event.preventDefault();
                 this.setState({ ndex: DATA.sample_ndex})
             }}>{DATA.sample_ndex}</a>
@@ -168,8 +168,9 @@ class InputForm extends React.Component {
                             name="protein_coding"
                             value={protein_coding}
                             onChange={this.handleChange}>
-                            <MenuItem value="hg18">hg18</MenuItem>
-                            <MenuItem value="hg19">hg19</MenuItem>
+                            {Object.entries(DATA.protein_codings).map((a, b) => {
+                                return <MenuItem key={b} value={a[0]}>{a[1]}</MenuItem>
+                            })}
                         </Select>
                         <FormHelperText>{DATA.help.protein_coding}</FormHelperText>
                     </FormControl>

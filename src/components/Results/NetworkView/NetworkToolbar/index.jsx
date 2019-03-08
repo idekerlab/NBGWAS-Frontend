@@ -24,8 +24,10 @@ const openInCytoscape = (cx) => {
         })
 }
 
-const searchPortal = () => {
-    alert("Opening portal search")
+const searchPortal = (searchString) => {
+    console.log(searchString)
+    
+    alert("Opening portal search: " + searchString)
 }
 
 class NetworkToolbar extends React.Component {
@@ -45,6 +47,13 @@ class NetworkToolbar extends React.Component {
         }).catch(e => {
             // Ignore error
         })
+    }
+
+    doSearch = () => {
+        const nodes = window.cy.nodes()
+        const nodeNames = nodes.map(a => a.data('name'))
+        const searchString = nodeNames.join(' ')
+        searchPortal(searchString);
     }
 
     componentDidMount() {
@@ -100,7 +109,7 @@ class NetworkToolbar extends React.Component {
                 <NDExSignInButton 
                     onSuccess={this.onLoginSuccess}
                 />
-                <button onClick={searchPortal}><SearchIcon /></button>
+                <button onClick={this.doSearch}><SearchIcon /></button>
             </div>
             <div className="toolbar-separator" />
             <div className="cytoscape-toolbar-group network-tools">
