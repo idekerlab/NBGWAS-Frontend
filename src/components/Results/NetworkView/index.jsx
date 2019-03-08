@@ -21,6 +21,7 @@ class NetworkView extends React.Component {
             searchString: '',
             loading: false,
             genes: props.genes.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']]),
+            topNGenes: []
         }
         this.doPreview = this.doPreview.bind(this);
     }
@@ -41,8 +42,8 @@ class NetworkView extends React.Component {
         const { ndex } = this.props;
         const { genes } = this.state;
         
-        const geneList = genes.slice(0, num)
-        const searchString = geneList.map(a => 'nodeName:"' + a.id + '"').join(' OR ')
+        const topNGenes = genes.slice(0, num)
+        const searchString = topNGenes.map(a => 'nodeName:"' + a.id + '"').join(' OR ')
         const ndex_url = DATA.url.ndex_query.replace('{networkid}', ndex)
         const body = {
             searchString,
@@ -73,7 +74,7 @@ class NetworkView extends React.Component {
                 const layout = window.cy.layout({'name': 'grid'})
                 layout.run();
                 
-                this.setState({network: cxNetwork, searchString, loading: false})
+                this.setState({network: cxNetwork, topNGenes, loading: false})
             })
             .catch(err => {
                 if (err.response.status === 500){
@@ -88,9 +89,11 @@ class NetworkView extends React.Component {
     render(){
         const {
             network,
-            loading
+            loading,
+            topNGenes
         } = this.state;
 
+        const geneNames = topNGenes.map(a => a.id).join(',')        
 
         return (
         <div
@@ -108,6 +111,7 @@ class NetworkView extends React.Component {
                 onPreview={this.onPreview}
                 initialTopN={this.initialTopN}
                 loading={loading}
+                geneNames={geneNames}
             />
         </div>
         );

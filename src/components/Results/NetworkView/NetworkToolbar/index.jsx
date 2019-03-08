@@ -80,7 +80,8 @@ class NetworkToolbar extends React.Component {
         } = this.state;
 
         const {
-            network
+            network,
+            geneNames
         } = this.props
 
         const cytoscape_img_cls = cytoscape_running ? '' : 'btn-disabled';
@@ -109,7 +110,7 @@ class NetworkToolbar extends React.Component {
                 <NDExSignInButton 
                     onSuccess={this.onLoginSuccess}
                 />
-                <button onClick={this.doSearch}><SearchIcon /></button>
+                    <a href={DATA.url.open_in_search + "?genes=" + geneNames} target="_blank" rel="noopener noreferrer"><SearchIcon /></a>
             </div>
             <div className="toolbar-separator" />
             <div className="cytoscape-toolbar-group network-tools">

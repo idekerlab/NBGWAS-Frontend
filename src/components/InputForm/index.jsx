@@ -168,8 +168,8 @@ class InputForm extends React.Component {
                             name="protein_coding"
                             value={protein_coding}
                             onChange={this.handleChange}>
-                            {Object.entries(DATA.protein_codings).map((a, b) => {
-                                return <MenuItem key={b} value={a[0]}>{a[1]}</MenuItem>
+                            {DATA.protein_codings.map((a, b) => {
+                                return <MenuItem key={b} value={a.path}>{a.name}</MenuItem>
                             })}
                         </Select>
                         <FormHelperText>{DATA.help.protein_coding}</FormHelperText>

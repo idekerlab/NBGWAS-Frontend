@@ -4,7 +4,7 @@ const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
-    version: '0.1.1',
+    version: '0.1.2',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
         sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
@@ -16,7 +16,7 @@ const data = {
         poll_cytoscape: 'http://localhost:1234/v1',
         open_in_cytoscape: 'http://localhost:1234/cyndex2/v1/networks/cx',
         open_in_ndex: 'http://ndexbio.org/v2/network',
-        open_in_search: "http://secret.ndexbio.org/cytosearch"
+        open_in_search: "http://34.218.195.7/"
         // publication: "/", // ADD link to publication to generate a link in the app
     },
     defaults: {
@@ -27,10 +27,16 @@ const data = {
         window: 10000
     },
     // Add protein coding files here.
-    protein_codings: {
-        hg18: "hg18",
-        hg19: "hg19",
-    },
+    protein_codings: [{
+        name: "hg18",
+        path: "hg18.txt",
+        description: ""
+        },
+        {
+        name: "hg19",
+        path: "hg19.txt",
+        description: ""
+    }],
     text: {
         snp_level_summary: 'Upload GWAS Summary Statistics',
         ndex: 'Network UUID in NDEx',
