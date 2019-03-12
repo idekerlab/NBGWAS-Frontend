@@ -72,3 +72,18 @@
 .sign-in-container {
     min-height: 300px;
 }
+
+.sign-in-header {
+    display: flex;
+    padding: 10px;
+}
+
+.ndex-account-greeting {
+    flex-grow: 1;
+}
+
+.sign-in-error {
+    color: red;
+    padding-top: 10px;
+    font-weight: bold;
+}

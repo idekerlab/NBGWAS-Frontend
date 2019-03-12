@@ -2,7 +2,7 @@ import React from 'react'
 import {TextField, ExpansionPanel, ExpansionPanelSummary, Typography} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Row from '../Row'
-import data from '../../../assets/data'
+import config from '../../../assets/config'
 import './style.css'
 
 const AdvancedPanel = (props) => {
@@ -16,8 +16,8 @@ const AdvancedPanel = (props) => {
                     <TextField
                         name="window"
                         type="number"
-                        label={data.text.window}
-                        helperText={data.help.window}
+                        label={config.text.window}
+                        helperText={config.help.window}
                         value={props.window}
                         onChange={props.handleChange}
                         fullWidth
@@ -26,9 +26,9 @@ const AdvancedPanel = (props) => {
                 <Row>
                     <TextField
                         name="alpha"
-                        label={data.text.alpha}
+                        label={config.text.alpha}
                         helperText={<span>
-                            {data.help.alpha}
+                            {config.help.alpha}
                             <br />
                             If unset, then optimal parameter is selected by linear model derived from <a href="https://www.cell.com/cell-systems/fulltext/S2405-4712(18)30095-4">(Huang, Cell Systems 2018)</a>
                         </span>}

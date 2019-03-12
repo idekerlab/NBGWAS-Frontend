@@ -1,7 +1,6 @@
 import React from 'react'
 import { DialogContent, Dialog, DialogTitle, 
-    Button, Grid, Paper, TextField, FormControl } from '@material-ui/core'
-import OpenInNDExIcon from './images/open_in_ndex.png'
+    Button, Grid, Paper, TextField, FormControl, Typography, Avatar } from '@material-ui/core'
 import GoogleLogin from 'react-google-login';
 
 import GoogleLogo from './images/google-logo.svg'
@@ -14,9 +13,9 @@ const NDEX_USER_VALIDATION = "http://ndexbio.org/v2/user?valid=true"
 // testing
 const googleClientId = '802839698598-mrrd3iq3jl06n6c2fo1pmmc8uugt9ukq.apps.googleusercontent.com'
 
-function GoogleSignOn({googleSSO, onSuccess, onFailure}) {
+function GoogleSignOn({googleSSO, onLoginSuccess, onFailure}) {
     
-    const onLoginSuccess = (resp) => {
+    const onSuccess = (resp) => {
         const token = resp.tokenObj.token_type + ' ' + resp.tokenObj.access_token
         const profile = {
             name: resp.profileObj.name,
@@ -27,7 +26,7 @@ function GoogleSignOn({googleSSO, onSuccess, onFailure}) {
             }
         }
 
-        onSuccess(profile)
+        onLoginSuccess(profile)
     }
     
     const clsName = googleSSO ? "google-sign-in-button" : 'google-sign-in-button googleButtonDisabled'
@@ -59,7 +58,7 @@ function GoogleSignOn({googleSSO, onSuccess, onFailure}) {
                     </Button>
                 )}
                 buttonText="Login"
-                onSuccess={onLoginSuccess}
+                onSuccess={onSuccess}
                 onFailure={onFailure}
             />
         </div>
@@ -91,7 +90,7 @@ class CredentialsSignOn extends React.Component {
                     token: resp.config.headers['Authorization']
                 }
             }
-            this.props.onSuccess(profile)
+            this.props.onLoginSuccess(profile)
 
         }).catch(err => {
             console.log(err)
@@ -177,7 +176,7 @@ export class NDExSignIn extends React.Component {
         this.state = {
             username: "",
             googleSSO: true,
-            erros: [],
+            error: null,
         }
     }
 
@@ -185,36 +184,35 @@ export class NDExSignIn extends React.Component {
         if ('details' in err && err.details.startsWith('Not a valid origin for the client: http://localhost:')){
             this.setState({googleSSO: false})
         }else{
-            this.setState({errors: err})
+            const message = err.hasOwnProperty('error') ? err['error'] : JSON.stringify(err)
+            this.setState({error: message})
         }
     }
 
     render() {
         const {
             googleSSO,
-            errors
+            error
         } = this.state;
 
         const {
             handleClose,
-            onSuccess
+            onLoginSuccess,
         } = this.props
 
         return (
             <div>
                 <DialogTitle id="form-dialog-title">Sign in to your NDEx Account</DialogTitle>
                 <DialogContent>
-                    {/* <DialogContentText>
-                        Log in to your NDEx account with Google or a username and password.
-                    </DialogContentText> */}
                     <div className="NDExSignInContainer">
+                        { }
                         <Grid container spacing={8}>
                             <Grid item xs={6} className="grid">
                                 <Paper className='grid-paper'>
                                     <div className="grid-content">
                                         <GoogleSignOn 
                                             googleSSO={googleSSO}
-                                            onSuccess={onSuccess}
+                                            onLoginSuccess={onLoginSuccess}
                                             onFailure={this.onFailure}
                                         />
                                     </div>
@@ -224,7 +222,7 @@ export class NDExSignIn extends React.Component {
                                 <Paper className='grid-paper'>
                                     <div className="grid-content">
                                         <CredentialsSignOn
-                                            onSuccess={onSuccess}
+                                            onLoginSuccess={onLoginSuccess}
                                             handleClose={handleClose}
                                         />
                                     </div>
@@ -232,51 +230,52 @@ export class NDExSignIn extends React.Component {
                             </Grid>
                         </Grid>
                     </div>
-                    <div className="sign-in-error">
-                        {JSON.stringify(errors)}
-                    </div>
+                    {error && 
+                        <div className="sign-in-error">
+                            Failed to login: {error}
+                        </div>
+                    }
                 </DialogContent>
             </div>
         );
     }
 }
 
-export default class NDExSignInButton extends React.Component {
-    state = {
-        open: false,
-    };
-
-    handleOpen = () => {
-        this.setState({ open: true });
-    };
-
-    handleClose = () => {
-        this.setState({ open: false });
-    };
-
-    onSuccess = (auth) => {
-        this.handleClose()
-        this.props.onSuccess(auth)
-    }
-
-    render() {
+export default class NDExSignInModal extends React.Component {
+    
+    render(){
         const {
-            open,
-        } = this.state;
+            profile,
+            handleClose,
+            onLoginSuccess,
+            onLogout,
+            children
+        } = this.props;
 
         return (
             <div>
-                <button onClick={this.handleOpen}><img src={OpenInNDExIcon} alt="Open in NDEx" /></button>
                 <Dialog
                     className="sign-in-container"
-                    open={open}
-                    onClose={this.handleClose}
+                    open={true}
+                    onClose={handleClose}
                     aria-labelledby="form-dialog-title"
                 >
-                    <NDExSignIn
-                        handleClose={this.handleClose}
-                        onSuccess={this.onSuccess}
-                    />
+                    {profile ? 
+                        <div className="sign-in-header">
+                            <Avatar className="ndex-account-avatar" src={profile.image}>U</Avatar>
+                            <Typography variant="h4" className="ndex-account-greeting">
+                                Hi, {profile.name}
+                            </Typography>
+                            <Button onClick={onLogout}>Logout</Button>
+                        </div>
+                    :
+                        <NDExSignIn
+                            handleClose={handleClose}
+                            onLoginSuccess={onLoginSuccess}
+                            onLogout={onLogout}
+                        />
+                    }
+                    {children}
                 </Dialog>
             </div>
         );

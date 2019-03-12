@@ -2,8 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import CytoscapeComponent from 'react-cytoscapejs'
 
-import {apply} from '../../../api/apply_results'
-import DATA from '../../../assets/data'
+import {apply} from '../../api/apply_results'
+import config from '../../assets/config'
 import NetworkToolbar from './NetworkToolbar'
 import { CxToJs, CyNetworkUtils } from 'cytoscape-cx2js'
 
@@ -13,14 +13,13 @@ const utils = new CyNetworkUtils()
 const cx2js = new CxToJs(utils)
 
 class NetworkView extends React.Component {
-    initialTopN = 20
     constructor(props){
         super(props);
         this.state = {
             network: null,
             searchString: '',
             loading: false,
-            genes: props.genes.sort((a, b) => b[DATA.columns['finalheat']] - a[DATA.columns['finalheat']]),
+            genes: props.genes.sort((a, b) => b[config.columns['finalheat']] - a[config.columns['finalheat']]),
             topNGenes: []
         }
         this.doPreview = this.doPreview.bind(this);
@@ -34,17 +33,13 @@ class NetworkView extends React.Component {
         this.doPreview(num)
     }
 
-    componentDidMount = () => {
-        this.onPreview(this.initialTopN)
-    }
-
     async doPreview(num) {
         const { ndex } = this.props;
         const { genes } = this.state;
         
         const topNGenes = genes.slice(0, num)
         const searchString = topNGenes.map(a => 'nodeName:"' + a.id + '"').join(' OR ')
-        const ndex_url = DATA.url.ndex_query.replace('{networkid}', ndex)
+        const ndex_url = config.url.ndex_query.replace('{networkid}', ndex)
         const body = {
             searchString,
             searchDepth: 1,
@@ -109,7 +104,7 @@ class NetworkView extends React.Component {
             <NetworkToolbar 
                 network={network}
                 onPreview={this.onPreview}
-                initialTopN={this.initialTopN}
+                topN={config.topN}
                 loading={loading}
                 geneNames={geneNames}
             />

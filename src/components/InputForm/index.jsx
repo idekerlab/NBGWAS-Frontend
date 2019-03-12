@@ -8,7 +8,7 @@ import Row from './Row'
 import AdvancedPanel from './AdvancedPanel'
 import FileUpload from './FileUpload'
 
-import DATA from '../../assets/data'
+import config from '../../assets/config'
 import './style.css'
 
 /**
@@ -25,7 +25,7 @@ class InputForm extends React.Component {
         this.state = {
             complete: 0,
             running: false,
-            ...DATA.defaults};
+            ...config.defaults};
 
         this.file_input = null;
     }
@@ -36,7 +36,7 @@ class InputForm extends React.Component {
 
     runSample = (event) => {
         event.preventDefault();
-        this.props.handleLocation(DATA.url.sample_results)
+        this.props.handleLocation(config.url.sample_results)
     }
 
     validate = (formData) => {
@@ -81,14 +81,14 @@ class InputForm extends React.Component {
     }
 
     handleSubmit = (formData) => {
-        const config = {
+        const callbacks = {
             onUploadProgress: (progressEvent) => {
                 var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
                 this.setState({ running: true, complete: percentCompleted })
             }
         }
         
-        axios.post(DATA.url.endpoint, formData, config)
+        axios.post(config.url.endpoint, formData, callbacks)
             .then(res => {
                 if (res['data'] === 'failed') {
                     console.log(res)
@@ -117,20 +117,20 @@ class InputForm extends React.Component {
             running,
         } = this.state;
 
-        const pubLink = DATA.url.publication && <span> as in <a href={DATA.url.publication}>the publication</a></span>
+        const pubLink = config.url.publication && <span> as in <a href={config.url.publication}>the publication</a></span>
         
 
         const subheader = <div className='subheader'>
-            <p>{DATA.subheader}</p>
-            <p>To generate the sample results{pubLink}, use this provided <a href={DATA.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
+            <p>{config.subheader}</p>
+            <p>To generate the sample results{pubLink}, use this provided <a href={config.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
             Use the sample NDEx network, and set the protein coding to hg18.</p>
         </div>
 
         const ndex_help = <span>
             The UUID of the reference network on <a href="http://www.ndexbio.org">NDEx</a>. For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
                event.preventDefault();
-                this.setState({ ndex: DATA.sample_ndex})
-            }}>{DATA.sample_ndex}</a>
+                this.setState({ ndex: config.sample_ndex})
+            }}>{config.sample_ndex}</a>
         </span>
 
         if (running === true){
@@ -144,9 +144,12 @@ class InputForm extends React.Component {
             <form className='form' onSubmit={this.onSubmit}>
                 <CardHeader
                     className='header'
-                    title={DATA.title}
+                    title={config.title}
                     subheader={subheader}/>
                 <FileUpload 
+                    sampleURL={config.url.sample_file}
+                    text={config.text.snp_level_summary}
+                    help={config.help.snp_level_summary}
                     onChange={(f) => this.setState({snp_level_summary: f})}
                     name="snp_level_summary"
                     value={snp_level_summary}
@@ -154,7 +157,7 @@ class InputForm extends React.Component {
                 <Row>
                     <TextField
                         name="ndex"
-                        label={DATA.text.ndex}
+                        label={config.text.ndex}
                         helperText={ndex_help}
                         value={ndex}
                         onChange={this.handleChange}
@@ -163,16 +166,16 @@ class InputForm extends React.Component {
                 </Row>
                 <Row>
                     <FormControl fullWidth>
-                        <InputLabel htmlFor="protein_coding">{DATA.text.protein_coding}</InputLabel>
+                        <InputLabel htmlFor="protein_coding">{config.text.protein_coding}</InputLabel>
                         <Select
                             name="protein_coding"
                             value={protein_coding}
                             onChange={this.handleChange}>
-                            {DATA.protein_codings.map((a, b) => {
+                            {config.protein_codings.map((a, b) => {
                                 return <MenuItem key={b} value={a.path}>{a.name}</MenuItem>
                             })}
                         </Select>
-                        <FormHelperText>{DATA.help.protein_coding}</FormHelperText>
+                        <FormHelperText>{config.help.protein_coding}</FormHelperText>
                     </FormControl>
                 </Row>
                 <Row>
@@ -193,7 +196,7 @@ class InputForm extends React.Component {
                         className='run-button'
                         type="submit"
                         >
-                        {DATA.text.run}<ArrowForwardIcon/>
+                        {config.text.run}<ArrowForwardIcon/>
                     </Button>
                 </Row>
             </form>
