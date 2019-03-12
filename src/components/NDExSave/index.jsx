@@ -15,6 +15,8 @@ export default class NDExSave extends React.Component {
 
     saveToNDEx = () => {
         const { profile, cx } = this.props;
+        console.log(profile)
+        
         const authorization = profile.authorization.token;
 
         axios.post(config.save_to_ndex, cx, {
@@ -23,10 +25,13 @@ export default class NDExSave extends React.Component {
                 'Authorization': authorization
             }
         })
-            .then(resp => {
-                const networkUrl = resp.data.replace("/v2/", "/#/")
-                this.setState({ networkUrl })
-            })
+        .then(resp => {
+            const networkUrl = resp.data.replace("/v2/", "/#/")
+            this.setState({ networkUrl })
+        })
+        .catch(err => {
+            alert("Failed to save network to NDEx: " + err)
+        })
     }
 
     handleClose = () => {

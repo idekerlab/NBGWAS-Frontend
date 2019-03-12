@@ -3,20 +3,56 @@ import { DialogContent, Dialog, DialogTitle,
     Button, Grid, Paper, TextField, FormControl, Typography, Avatar } from '@material-ui/core'
 import GoogleLogin from 'react-google-login';
 
-import GoogleLogo from './images/google-logo.svg'
-import GoogleLogoDisabled from './images/google-logo-disabled.svg'
+import GoogleLogo from './assets/images/google-logo.svg'
+import GoogleLogoDisabled from './assets/images/google-logo-disabled.svg'
 
 import './style.css'
-import Axios from 'axios';
+import axios from 'axios';
 
-const NDEX_USER_VALIDATION = "http://ndexbio.org/v2/user?valid=true"
-// testing
-const googleClientId = '802839698598-mrrd3iq3jl06n6c2fo1pmmc8uugt9ukq.apps.googleusercontent.com'
+import config from './assets/config'
 
-function GoogleSignOn({googleSSO, onLoginSuccess, onFailure}) {
-    
-    const onSuccess = (resp) => {
-        const token = resp.tokenObj.token_type + ' ' + resp.tokenObj.access_token
+class GoogleSignOn extends React.Component {
+
+    onFailure = (err) => {
+        const message = 
+            (err.details && err.details.startsWith('Not a valid origin for the client: http://localhost:'))
+            ||
+            (err.error && err['error'])
+            || 
+            JSON.stringify(err);
+        this.props.onError(message, false)
+    }
+
+    createAccount = (profile) => {
+        const auth = profile.authorization.token;
+        const token = auth.replace("Bearer ", "")
+        
+        axios.post(config.NDEX_CREATE_ACCOUNT + "?idToken=" + token)
+        .then(resp => {
+            console.log(resp)
+        })
+    }
+
+    verify = (profile) => {
+        axios.get(config.NDEX_USER_VALIDATION, {
+            headers: {
+                Authorization: profile.authorization.token
+            }
+        })
+        .then(_ => {
+            this.props.onLoginSuccess(profile)
+        })
+        .catch(error => {
+            const message = error.response.data.message || ("Failed to verify account. " + error)
+            if (error.startsWith("User with email") && error.endsWith("doesn't exist.")){
+                this.createAccount(profile);
+            }
+            this.props.onError(message, true)
+        })
+    }
+
+    onSuccess = (resp) => {
+        const token = resp.tokenObj.token_type + ' ' + resp.tokenObj.id_token
         const profile = {
             name: resp.profileObj.name,
             image: resp.profileObj.imageUrl,
@@ -25,44 +61,47 @@ function GoogleSignOn({googleSSO, onLoginSuccess, onFailure}) {
                 token
             }
         }
-
-        onLoginSuccess(profile)
+        this.verify(profile)
     }
     
-    const clsName = googleSSO ? "google-sign-in-button" : 'google-sign-in-button googleButtonDisabled'
-    const title = googleSSO ? "Sign in with your Google account" : "Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser." +
-    "To use the Google Sign In feature you can do one of two things:" + 
-    "1. Add 'accounts.google.com' to the list of websites allowed to write / read THIRD - PARTY COOKIES, or" + 
-    "2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings.";
-    const logo = googleSSO ? GoogleLogo : GoogleLogoDisabled;
+    render() {
+        const { googleSSO } = this.props;
 
-    return (
-        <div className="google-button">
-            <GoogleLogin
-                clientId={googleClientId}
-                render={renderProps => (
-                    <Button id="googleSignInButtonId"
-                        disabled={!googleSSO}
-                        className={clsName}
-                        title={title}
-                        onClick={renderProps.onClick}
-                    >
-                        <span className="google-sign-in-button-span">
-                            <img src={logo}
-                                alt=""
-                                className='googleLogo'
-                            />
-                            <div className='googleSignInText'
-                            >Sign In / Sign Up with Google</div>
-                        </span>
-                    </Button>
-                )}
-                buttonText="Login"
-                onSuccess={onSuccess}
-                onFailure={onFailure}
-            />
-        </div>
-    )
+        const clsName = googleSSO ? "google-sign-in-button" : 'google-sign-in-button googleButtonDisabled'
+        const title = googleSSO ? "Sign in with your Google account" : "Google Sign In is currently unavailable because the 'BLOCK THIRD-PARTY COOKIES' option is enabled in your web browser." +
+        "To use the Google Sign In feature you can do one of two things:" + 
+        "1. Add 'accounts.google.com' to the list of websites allowed to write / read THIRD - PARTY COOKIES, or" + 
+        "2. Disable the 'BLOCK THIRD-PARTY COOKIES' option in your browser settings.";
+        const logo = googleSSO ? GoogleLogo : GoogleLogoDisabled;
+
+        return (
+            <div className="google-button">
+                <GoogleLogin
+                    clientId={config.googleClientId}
+                    render={renderProps => (
+                        <Button id="googleSignInButtonId"
+                            disabled={!googleSSO}
+                            className={clsName}
+                            title={title}
+                            onClick={renderProps.onClick}
+                        >
+                            <span className="google-sign-in-button-span">
+                                <img src={logo}
+                                    alt=""
+                                    className='googleLogo'
+                                />
+                                <div className='googleSignInText'
+                                >Sign in with Google</div>
+                            </span>
+                        </Button>
+                    )}
+                    buttonText="Login"
+                    onSuccess={this.onSuccess}
+                    onFailure={this.onFailure}
+                />
+            </div>
+        )
+    }
 }
 
 class CredentialsSignOn extends React.Component {
@@ -76,11 +115,13 @@ class CredentialsSignOn extends React.Component {
         const pwd = window.basicAuthSignIn.password.value;
         
         const auth = 'Basic ' + window.btoa(user + ":" + pwd);
-        const config = { "headers": {
-            Authorization: auth,
-        }}
+        const headers = { 
+            headers: {
+                Authorization: auth,
+            }
+        }
 
-        Axios.get(NDEX_USER_VALIDATION, config)
+        axios.get(config.NDEX_USER_VALIDATION, headers)
         .then(resp => {
             const profile = {
                 name: resp.data.firstName,
@@ -174,19 +215,13 @@ export class NDExSignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "",
-            googleSSO: true,
             error: null,
+            googleSSO: true,
         }
     }
 
-    onFailure = (err) => {
-        if ('details' in err && err.details.startsWith('Not a valid origin for the client: http://localhost:')){
-            this.setState({googleSSO: false})
-        }else{
-            const message = err.hasOwnProperty('error') ? err['error'] : JSON.stringify(err)
-            this.setState({error: message})
-        }
+    onError = (error, googleSSO) => {
+        this.setState({error, googleSSO})
     }
 
     render() {
@@ -205,15 +240,14 @@ export class NDExSignIn extends React.Component {
                 <DialogTitle id="form-dialog-title">Sign in to your NDEx Account</DialogTitle>
                 <DialogContent>
                     <div className="NDExSignInContainer">
-                        { }
                         <Grid container spacing={8}>
                             <Grid item xs={6} className="grid">
                                 <Paper className='grid-paper'>
                                     <div className="grid-content">
                                         <GoogleSignOn 
+                                            onError={this.onError}
                                             googleSSO={googleSSO}
                                             onLoginSuccess={onLoginSuccess}
-                                            onFailure={this.onFailure}
                                         />
                                     </div>
                                 </Paper>
@@ -231,10 +265,9 @@ export class NDExSignIn extends React.Component {
                         </Grid>
                     </div>
                     {error && 
-                        <div className="sign-in-error">
-                            Failed to login: {error}
-                        </div>
-                    }
+                    <div className='sign-in-error'>
+                        <p>{error}</p>
+                    </div>}
                 </DialogContent>
             </div>
         );

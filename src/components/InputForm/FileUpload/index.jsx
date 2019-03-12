@@ -67,7 +67,8 @@ class FileUpload extends React.Component {
             const blob = new Blob([resp.data], { type: 'application/text' })
             main.blobToFile(blob);
         }).catch(err => {
-            
+            alert("Failed to load sample file: " + err);
+            main.setState({sample: false, progress: null})
         })
     }
 

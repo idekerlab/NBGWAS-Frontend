@@ -72,7 +72,7 @@ class NetworkView extends React.Component {
                 this.setState({network: cxNetwork, topNGenes, loading: false})
             })
             .catch(err => {
-                if (err.response.status === 500){
+                if (err.response && err.response.status === 500){
                     alert("Too many nodes to run query. Decrease your top node count and try again.")
                 }else{
                     alert(err)
