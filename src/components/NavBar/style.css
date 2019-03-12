@@ -1,0 +1,14 @@
+.navbar {
+    background-color: white;
+    color: black;
+}
+
+.version {
+    color: #BBB;
+    font-size: .8rem;
+}
+
+.logo {
+    max-height: 60px;
+    padding-right: 10px;
+}

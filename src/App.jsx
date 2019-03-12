@@ -2,7 +2,8 @@ import './App.css'
 import React, { Component } from 'react';
 
 import NavBar from './components/NavBar'
-import Content from './components/Content'
+import Content from './containers/Content'
+import WarningBar from './components/WarningBar'
 
 
 class App extends Component {
@@ -10,7 +11,10 @@ class App extends Component {
     return (
       <div className="App">
         <NavBar/>
-        <Content/>
+        <div className="paper-container">
+          <Content/>
+        </div>
+        <WarningBar />
       </div>
     );
   }

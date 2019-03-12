@@ -1,0 +1,78 @@
+.cytoscape-toolbar-group {
+    display: flex;
+    padding: 4px;
+    align-items: center;
+    
+}
+
+.toolbar-separator {
+    min-height: 15px;
+    width: 2px;
+    background: gray;
+}
+
+.cytoscape-toolbar {
+    display: flex;
+    flex-flow: wrap;
+    z-index: 1;
+    background-color:#EEE;
+    font-size: 14px;
+}
+
+.cytoscape-toolbar button {
+    border: none;
+    background: transparent;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.cytoscape-toolbar button:hover {
+    background: rgba(0, 0, 0, .1);
+    cursor:pointer;
+}
+
+.cytoscape-toolbar button:focus {
+    outline: none;
+}
+
+.cytoscape-toolbar a {
+    border: none;
+    background: transparent;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.cytoscape-toolbar a:hover {
+    background: rgba(0, 0, 0, .1);
+    cursor:pointer;
+}
+
+.cytoscape-toolbar a:focus {
+    outline: none;
+}
+
+.btn-disabled {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
+.exporters img {
+    max-height: 40px;
+}
+
+.cytoscape-toolbar-input {
+    padding: 5px;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
+#topN {
+    width: 50px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    text-align: center;
+    margin-left: 5px;
+}

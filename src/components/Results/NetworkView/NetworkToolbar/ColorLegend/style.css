@@ -1,0 +1,21 @@
+.gradient {
+    background: #ffffff;
+    background: -moz-linear-gradient(left, #ffffff 0%, #ff0000 100%);
+    background: -webkit-linear-gradient(left, #ffffff 0%,#ff0000 100%);
+    background: linear-gradient(to right, #ffffff 0%,#ff0000 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ff0000',GradientType=0 );
+    min-width: 40px;
+    min-height: 15px;
+    padding: 0px 4px;
+    margin: 0px 4px;
+    border: 1px solid black;
+}
+
+.gradient-container {
+    
+    padding: 5px;    
+    display: inline-flex;
+    margin: 5px;
+    font-size: 12px;
+    align-items: center;
+}

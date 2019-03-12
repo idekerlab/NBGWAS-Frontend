@@ -1,0 +1,16 @@
+.paper {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    align-content: center;
+    min-width: 500px;
+    position: relative;
+}
+.previous-link {
+    position: absolute;
+    left:10px;
+    bottom: -20px;
+    color: white;
+    font-size: 12px;
+}

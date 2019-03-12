@@ -4,35 +4,20 @@ import { Tooltip, LinearProgress } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/Close'
 import axios from 'axios'
 
+import DATA from '../../assets/data'
 import ResultTable from './ResultTable'
-// import NetworkView from './NetworkView'
+import NetworkView from './NetworkView'
+import './style.css'
 
-const styles = {
-    floatRight: {
-        float: 'right',
-        marginLeft: '10px'
-    },
-    closeButton: {
-        float:'right'
-    },
-    errorBox: {
-        background: '#ff000020',
-        paddingLeft: '7px'
-    },
-    back: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        padding: '5px'
-    }
-}
 
-function downloadAsCsv(data){
-    var csv = 'Name,Final Heat\n';
-    data.forEach(function (row) {
-        csv += row['id'] + ',' + row['heat'];
-        csv += "\n";
+function downloadAsCsv(columns, data){
+    
+    var csv = "Name," + columns.join(",") + "\n";
+    const lines = data.map(row => {
+        const rowInfo = columns.map(name => row[name]);
+        return row['id'] + ',' + rowInfo.join(',');
     });
+    csv += lines.join("\n")
     var hiddenElement = document.createElement('a');
     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
     hiddenElement.target = '_blank';
@@ -40,15 +25,21 @@ function downloadAsCsv(data){
     hiddenElement.click();
 }
 
+/**
+ * author: Brett Settle
+ * 
+ * Result Component to get results from a task UUID and display them
+ * in a NetworkView and a ResultTable
+ */
 class Results extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             data: null,
             columns: [],
-            parameters: {}
+            parameters: {},
+            ndex: null
         }
-        window.results = this;
         this.handleDelete = this.handleDelete.bind(this)
     }
 
@@ -64,10 +55,13 @@ class Results extends React.Component {
                         return;
                     }
                 }
-                
+                clearInterval(this.timer)
+
                 let response = res.data;
                 if (response.hasOwnProperty('result')){
                     this.handleResponse(response)
+                }else{
+                    throw new Error("No 'result' in " + JSON.stringify(response));
                 }
             }).catch(error => {
                 clearInterval(this.timer)
@@ -77,20 +71,29 @@ class Results extends React.Component {
     }
 
     handleResponse= response => {
-        clearInterval(this.timer)
         let result = response["result"];
         let parameters = response["parameters"];
+        
         let columns = result['resultkey'];
         let resultvalue = result["resultvalue"];
+        let ndex = parameters['ndex'];
 
+        // Organize data in readable manner: {id:, col1:, col2:}
         let data = Object.keys(resultvalue).map(key => {
             const row = {id: key};
-            for (var i = 0; i < columns.length; i++)
-                row[columns[i]] = resultvalue[key][i];
+            for (var i = 0; i < columns.length; i++){
+                const colName = DATA.columns[columns[i]];
+                if (colName){
+                    row[colName] = resultvalue[key][i];
+                }else{
+                    row[columns[i]] = resultvalue[key][i];
+                }
+            }
             return row;
         })
+        columns = columns.map(name => DATA.columns[name]).filter(name => name !== undefined)
 
-        this.setState({ data, columns, parameters })
+        this.setState({ data, columns, parameters, ndex })
     }
 
     componentWillUnmount() {
@@ -102,8 +105,15 @@ class Results extends React.Component {
         this.props.handleDelete(index);
     }
 
+    rowClick = (event, name) => {
+        // const node = window.cy.elements('node[name = "' + name + '"]');
+        // alert(JSON.stringify(node.data(), null, 2))
+        //window.cy.elements().unselect()
+        //.select()
+    }
+
     render() {
-        const { data, columns } = this.state;
+        const { data, columns, ndex } = this.state;
         if (this.props.location === null){
             return (<div>
                 <p>Unkown location: {this.props.location})...</p>
@@ -114,20 +124,31 @@ class Results extends React.Component {
             <div>
                 <p>Waiting for result (task UUID: '{id}')</p>
                 <LinearProgress />
-                <a href="/" style={styles.back}><BackIcon /></a>
+                <a href="/" className='back'><BackIcon /></a>
             </div>
             :
-            <ResultInfo data={data} columns={columns} handleBack={this.props.handleBack}/>            
+            <div className="results">
+                <NetworkView
+                    ndex={ndex}
+                    genes={data}
+                    />
+                <ResultInfo 
+                    data={data}
+                    columns={columns}
+                    handleClick={this.rowClick}/>
+                <ButtonBar 
+                    handleDownload={() => downloadAsCsv(columns, data)}
+                    handleBack={this.props.handleBack} />         
+            </div>
         );
     }
 }
 
-function ResultInfo(props) {
+const ResultInfo = (props) => {
     const {
-        // ndex,
         data, 
         columns,
-        handleBack} = props;
+        handleClick} = props;
 
     const column_arr = columns.map(name => {
         return { id: name, numeric: true, disablePadding: true, label: name }
@@ -136,40 +157,29 @@ function ResultInfo(props) {
     column_arr.splice(0, 0, {id: 'id', numeric: false, disablePadding: true, label: "Name"})
 
     return (
-    <div>
-        {/* <NetworkView
-            data={data}
-        /> */}
-
-
         <ResultTable
             data={data}
             columns={column_arr} 
-            orderBy="finalheat"
+            orderBy={DATA.columns['finalheat']}
+            handleClick={handleClick}
           />
-        <div>
-            <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">
-                <Button variant="contained" onClick={() => {  
-                    if (window.confirm("All results will be lost. Be sure to export your data to CSV or NDEx! \n Continue?")){
-                        handleBack()
-                    }
-                }}>Back
-                </Button>
-            </Tooltip>
-            <Button variant="contained" style={styles.floatRight} onClick={() => downloadAsCsv(data)}>
-                Export to CSV
-            </Button>
-
-            <Tooltip title="Coming Soon!" placement="top">
-                <span style={styles.floatRight}>
-                    <Button variant="contained" color="primary" disabled>
-                        View on NDEx
-                    </Button>
-                </span>
-            </Tooltip>
-        </div>
-    </div>
     );
+}
+
+const ButtonBar = ({handleBack, handleDownload}) => {
+    return (<div>
+        <Tooltip title="All results will be lost. Be sure to export the data!" placement="top">
+            <Button variant="contained" onClick={() => {
+                if (window.confirm("All results will be lost. Be sure to export your data to CSV or NDEx! \n Continue?")) {
+                    handleBack()
+                }
+            }}>Back
+                </Button>
+        </Tooltip>
+        <Button variant="contained" className='float-right' onClick={handleDownload}>
+            Export to CSV
+            </Button>
+    </div>)
 }
 
 export default Results;
