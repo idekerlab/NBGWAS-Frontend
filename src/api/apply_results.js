@@ -5,7 +5,7 @@ Currently, this adds nodeAttributes for 'finalheat' and 'finalrank' as well
 as a cyVisualProperties element for styling the network from white to red
 by finalrank
 */
-import DATA from '../assets/data'
+import config from '../assets/config'
 
 
 function makeNodeAttributes(nodes, geneList) {
@@ -21,7 +21,7 @@ function makeNodeAttributes(nodes, geneList) {
         return {
             "po": node['@id'],
             "n": 'finalheat',
-            "v": geneMap[node['n']][DATA.columns['finalheat']],
+            "v": geneMap[node['n']][config.columns['finalheat']],
             "d": "double"
         };
     });

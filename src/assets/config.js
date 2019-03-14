@@ -4,7 +4,7 @@ const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
-    version: '0.1.2',
+    version: '0.1.3',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
         sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
@@ -13,10 +13,6 @@ const data = {
         data: '/nagadata',
         endpoint: "/rest/v1/snp_analyzer",
         ndex_query: 'http://www.ndexbio.org/v2/search/network/{networkid}/interconnectquery?save=false',
-        poll_cytoscape: 'http://localhost:1234/v1',
-        open_in_cytoscape: 'http://localhost:1234/cyndex2/v1/networks/cx',
-        open_in_ndex: 'http://ndexbio.org/v2/network',
-        open_in_search: "http://34.218.195.7/"
         // publication: "/", // ADD link to publication to generate a link in the app
     },
     defaults: {
@@ -31,8 +27,8 @@ const data = {
         name: "hg18",
         path: "hg18",
         description: ""
-        },
-        {
+    },
+    {
         name: "hg19",
         path: "hg19",
         description: ""
@@ -55,6 +51,7 @@ const data = {
         protein_coding: 'Sets which protein coding table to use data relatedto NCBI human genome build hg18 or hg19',
     },
     sample_ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
+    topN: 25,
     columns: {
         negativelog: 'Gene Input Heat',
         finalheat: 'Final Heat'

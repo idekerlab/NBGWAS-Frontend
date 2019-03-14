@@ -2,25 +2,29 @@ import React from 'react'
 import axios from 'axios'
 import {FormHelperText, Button, Checkbox, FormControlLabel} from '@material-ui/core'
 import Row from '../Row'
-import data from '../../../assets/data'
 import './style.css'
 
 function formatBytes(a, b) { if (0 === a) return "0 Bytes"; var c = 1024, d = b || 2, e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], f = Math.floor(Math.log(a) / Math.log(c)); return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f] }
 
+/**
+ * FileUpload component with optional sample File checkbox and progress bar
+ * 
+ * Props: 
+ * - sampleURL: url of optional sample file
+ * - text: Button text for file select
+ * - help: Helper text displayed below component
+ * - onChange: function for accessing File object when selected
+ * 
+ */
 class FileUpload extends React.Component {
 
     constructor(props){
         super(props)
         this.state = {
             sample: false,
-            progress: -1,
+            progress: null,
             sampleFile: null
         }
-    }
-
-    handleRef = comp => {
-        this.file_input = comp
-        this.props.handleRef(comp)
     }
 
     blobToFile = (blob) => {
@@ -60,32 +64,38 @@ class FileUpload extends React.Component {
             }
         })
         .then(resp => {
-            console.log("Converting to blob...")
             const blob = new Blob([resp.data], { type: 'application/text' })
-            console.log("Converting to File...")
             main.blobToFile(blob);
         }).catch(err => {
-            
+            alert("Failed to load sample file: " + err);
+            main.setState({sample: false, progress: null})
         })
     }
 
     sampleToggled = ev => {
         if (ev.target.checked){
-            this.setState({ sample: true, progress: 0});
-            const url = data.url.sample_file; //"/samples/schizophrenia.txt"
+            this.setState({ sample: true, progress: -1});
+            const url = this.props.sampleURL;
             this.loadSample(url);
         } else{
             this.props.onChange(null);
-            this.setState({sample: false, progress: -1})
+            this.setState({sample: false, progress: null})
         }
     }
 
     render(){
         const {sample, progress} = this.state;
-        const {value} = this.props;
-        const message = "File " + (value !== null ? 
+        const {value,
+            text,
+            help
+        } = this.props;
+        const message = "File " + 
+        (value !== null ? 
             "Uploaded(" + formatBytes(value.size) + ")" :
-            "Uploading... (" + progress + "%)");
+            (progress < 0 ?
+                "Downloading..." :
+                "Uploading... (" + progress + "%)")
+        );
 
         return (<Row>
             <div className='upload-container'>
@@ -100,7 +110,7 @@ class FileUpload extends React.Component {
                 
                     <label htmlFor="fileUpload">
                         <Button variant="contained" component="span" disabled={sample}>
-                            {data.text.snp_level_summary}
+                            {text}
                         </Button>
                     </label>
                     
@@ -118,12 +128,12 @@ class FileUpload extends React.Component {
 
                 </p>
             </div>
-            {(progress >= 0 || value != null) &&
+            {(progress !== null || value != null) &&
                 <FormHelperText>
                     {message}
                 </FormHelperText>
             }
-            <FormHelperText>{data.help.snp_level_summary}</FormHelperText>
+            <FormHelperText>{help}</FormHelperText>
         </Row>)
     }
 }

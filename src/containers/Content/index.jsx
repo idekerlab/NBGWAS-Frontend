@@ -5,7 +5,7 @@ import DialogInput from '../../components/DialogInput'
 import InputForm from '../../components/InputForm'
 import Results from '../../components/Results'
 import './style.css'
-import DATA from '../../assets/data';
+import config from '../../assets/config';
 
 /**
  * author: Brett Settle
@@ -61,7 +61,7 @@ class Content extends React.Component {
                 {location === null && 
                     <a href="/" 
                         className="previous-link"
-                        onClick={this.runPrevious}>{DATA.text.view_previous}</a>
+                        onClick={this.runPrevious}>{config.text.view_previous}</a>
                 }
             </Paper>
         );

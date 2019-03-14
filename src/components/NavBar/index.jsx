@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 
 import logo from '../../assets/images/naga logo.png'
-import data from '../../assets/data';
+import config from '../../assets/config';
 import './style.css'
 
 /**
@@ -22,16 +22,16 @@ const NavBar = () => {
                     <img className="logo" src={logo} alt="NAGA Logo" height="match-parent" />
                 </a>
                 <Typography variant="title" style={{flexGrow: 1}} color="inherit">
-                    {data.title} <span className="version">v{data.version}</span>
+                    {config.title} <span className="version">v{config.version}</span>
                 </Typography>
                 <Button
-                    href={data.url.data}
+                    href={config.url.data}
                     color="inherit">Sample Data</Button>
                 <Button
-                    href={data.url.swagger}
+                    href={config.url.swagger}
                     color="inherit">Swagger API</Button>
                 <Button
-                    href={data.url.github}
+                    href={config.url.github}
                     color="inherit">Github</Button>
             </Toolbar>
         </AppBar>

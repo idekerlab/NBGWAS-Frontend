@@ -4,9 +4,9 @@ import { Tooltip, LinearProgress } from '@material-ui/core';
 import BackIcon from '@material-ui/icons/Close'
 import axios from 'axios'
 
-import DATA from '../../assets/data'
+import config from '../../assets/config'
 import ResultTable from './ResultTable'
-import NetworkView from './NetworkView'
+import NetworkView from '../NetworkView'
 import './style.css'
 
 
@@ -82,7 +82,7 @@ class Results extends React.Component {
         let data = Object.keys(resultvalue).map(key => {
             const row = {id: key};
             for (var i = 0; i < columns.length; i++){
-                const colName = DATA.columns[columns[i]];
+                const colName = config.columns[columns[i]];
                 if (colName){
                     row[colName] = resultvalue[key][i];
                 }else{
@@ -91,7 +91,7 @@ class Results extends React.Component {
             }
             return row;
         })
-        columns = columns.map(name => DATA.columns[name]).filter(name => name !== undefined)
+        columns = columns.map(name => config.columns[name]).filter(name => name !== undefined)
 
         this.setState({ data, columns, parameters, ndex })
     }
@@ -134,8 +134,7 @@ class Results extends React.Component {
                     />
                 <ResultInfo 
                     data={data}
-                    columns={columns}
-                    handleClick={this.rowClick}/>
+                    columns={columns}/>
                 <ButtonBar 
                     handleDownload={() => downloadAsCsv(columns, data)}
                     handleBack={this.props.handleBack} />         
@@ -147,8 +146,7 @@ class Results extends React.Component {
 const ResultInfo = (props) => {
     const {
         data, 
-        columns,
-        handleClick} = props;
+        columns} = props;
 
     const column_arr = columns.map(name => {
         return { id: name, numeric: true, disablePadding: true, label: name }
@@ -160,8 +158,7 @@ const ResultInfo = (props) => {
         <ResultTable
             data={data}
             columns={column_arr} 
-            orderBy={DATA.columns['finalheat']}
-            handleClick={handleClick}
+            orderBy={config.columns['finalheat']}
           />
     );
 }
