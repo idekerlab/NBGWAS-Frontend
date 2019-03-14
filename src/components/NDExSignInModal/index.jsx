@@ -23,16 +23,6 @@ class GoogleSignOn extends React.Component {
         this.props.onError(message, false)
     }
 
-    createAccount = (profile) => {
-        const auth = profile.authorization.token;
-        const token = auth.replace("Bearer ", "")
-        
-        axios.post(config.NDEX_CREATE_ACCOUNT + "?idToken=" + token)
-        .then(resp => {
-            console.log(resp)
-        })
-    }
-
     verify = (profile) => {
         axios.get(config.NDEX_USER_VALIDATION, {
             headers: {
@@ -44,8 +34,11 @@ class GoogleSignOn extends React.Component {
         })
         .catch(error => {
             const message = error.response.data.message || ("Failed to verify account. " + error)
-            if (error.startsWith("User with email") && error.endsWith("doesn't exist.")){
-                this.createAccount(profile);
+            if (message.startsWith("User with email") && message.endsWith("doesn't exist.")){
+                const comp = <span>{message} Go to <a target="_blank" rel="noopener noreferrer" 
+                    href="http://ndexbio.org">http://ndexbio.org</a> to create an account</span>
+                this.props.onError(comp, true)
+                return;
             }
             this.props.onError(message, true)
         })
@@ -167,13 +160,13 @@ class CredentialsSignOn extends React.Component {
                 </FormControl>
                 
                 <div className="ndex-account-links">
-                    <div>
+                    {/* <div>
                         <a href="/"
                         >Forgot Password?</a>
-                    </div>
+                    </div> */}
                     <div>
                         <span>Need an account? </span>
-                        <a href="/"
+                        <a href="http://ndexbio.org"
                         >Click here to sign up!</a>
                     </div>
                 </div>
