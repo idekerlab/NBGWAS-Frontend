@@ -34,12 +34,15 @@ Try running the analysis with the sample file and UUID.
 
 ## Deployment
 
-We use semantic versioning for deploying the app, via Github tagging. __Always__ tag a commit before running the deploy command. The deploy command will build the app and `rsync` the build folder to nbgwas.ucsd.edu if you have permission.
+The version number is located in `package.json`, `src/assets/config.json`, and github tags. Update the version in all places before releasing.
+
+We use semantic versioning for deploying the app, via Github tagging. Once a version is tagged, build the static production version and deploy it to your home directory on the nbgwas server.
 ```bash
-npm run deploy
+npm run build
+npm run deploy # or npm run stage to push to nbgwas-stage.ucsd.edu
 ```
 
-Ensure that all of the links and endpoints work on deployment. Otherwise, redeploy the last tag.
+Connect to the server you deployed to and run `mv frontend /var/www/html/###` where ### is the version of the release. On the stage and production server, __the index.html file must be updated to redirect to the subdirectory of the latest version__
 
 ### Local Testing FAQ
 Using the `npm start` command to test locally causes the app to forward all requests to the `proxy` variable in `package.json`. If testing a different version of the REST API, change this variable. This variable is ignored when the project is deployed.
@@ -47,8 +50,6 @@ Using the `npm start` command to test locally causes the app to forward all requ
 The `homepage` variable is set to `"."` so that the app can be published to any domain name (`nbgwas.ucsd.edu` or `nbgwas.ucsd.edu/staging`).
 
 ## Future Goals
-We intend to connect this app with [Cytoscape](http://cytoscape.org) and [NDEx](http://ndexbio.org) so that output data can more easily be implemented into workflows and visualized.
-
 The paper for NAGA is on its way to being published and will be available via link soon.
 
 
