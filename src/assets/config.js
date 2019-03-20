@@ -33,6 +33,10 @@ const data = {
         path: "hg19",
         description: ""
     }],
+    tooltips: {
+        run_button_disabled: "'Network UUID in NDEx' field and 'UPLOAD GWAS SUMMARY STATISTICS' must be set to run NAGA processing",
+        run_button_enabled: "Runs NAGA processing"
+    },
     text: {
         snp_level_summary: 'Upload GWAS Summary Statistics',
         ndex: 'Network UUID in NDEx',

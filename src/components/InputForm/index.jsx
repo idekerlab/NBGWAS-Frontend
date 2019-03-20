@@ -2,6 +2,8 @@ import React from 'react'
 import { TextField, FormControl, Select, MenuItem, InputLabel,
     Button, CardHeader, FormHelperText, LinearProgress } from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import Tooltip from '@material-ui/core/Tooltip';
+
 import axios from 'axios'
 
 import Row from './Row'
@@ -25,13 +27,30 @@ class InputForm extends React.Component {
         this.state = {
             complete: 0,
             running: false,
+            disablerunbtn: true,
+            runbutntooltip: config.tooltips.run_button_disabled,
             ...config.defaults};
 
         this.file_input = null;
     }
 
     handleChange = event => {
-        this.setState({[event.target.name]: event.target.value})
+        var disablerunbtn = true
+        var runbutntooltip = config.tooltips.run_button_disabled
+        if (event.target.name === 'ndex'){
+            if (event.target.value !== undefined && event.target.value !== null &&
+                event.target.value.length >= 36){
+                if (this.state.snp_level_summary !== undefined &&
+                    this.state.snp_level_summary !== null){
+                        disablerunbtn = false
+                        runbutntooltip = config.tooltips.run_button_enabled
+                }
+            }
+
+        }
+        this.setState({[event.target.name]: event.target.value,
+                       'disablerunbtn': disablerunbtn,
+                       'runbutntooltip': runbutntooltip})
     }
 
     runSample = (event) => {
@@ -106,6 +125,19 @@ class InputForm extends React.Component {
             })
     }
 
+    handleFileUpload = (f) => {
+        if (f === undefined || f === null){
+            this.setState({snp_level_summary: f,
+                           'disablerunbtn': true,
+                           'runbutntooltip': config.tooltips.run_button_disabled})
+        }
+        else {
+            this.setState({snp_level_summary: f,
+                'disablerunbtn': false,
+                'runbutntooltip': config.tooltips.run_button_enabled})
+        }
+    }
+
     render(){
         const {
             ndex,
@@ -115,10 +147,11 @@ class InputForm extends React.Component {
             alpha,
             complete,
             running,
+            disablerunbtn,
+            runbutntooltip
         } = this.state;
 
         const pubLink = config.url.publication && <span> as in <a href={config.url.publication}>the publication</a></span>
-        
 
         const subheader = <div className='subheader'>
             <p>{config.subheader}</p>
@@ -150,7 +183,7 @@ class InputForm extends React.Component {
                     sampleURL={config.url.sample_file}
                     text={config.text.snp_level_summary}
                     help={config.help.snp_level_summary}
-                    onChange={(f) => this.setState({snp_level_summary: f})}
+                    onChange={this.handleFileUpload}
                     name="snp_level_summary"
                     value={snp_level_summary}
                 />
@@ -189,15 +222,19 @@ class InputForm extends React.Component {
                     <p className='button-bar-text'>
                         <a href="/" onClick={this.runSample}>Example output</a> (schizophrenia on hg18)
                     </p>
-                    
-                    <Button 
-                        color="primary"
-                        variant="contained" 
-                        className='run-button'
-                        type="submit"
-                        >
-                        {config.text.run}<ArrowForwardIcon/>
-                    </Button>
+                    <Tooltip title={runbutntooltip} placement='left-start'>
+                        <span className='run-button-tooltip'>
+                            <Button 
+                                color="primary"
+                                variant="contained" 
+                                className='run-button'
+                                disabled={disablerunbtn}
+                                type="submit"
+                                >
+                                {config.text.run}<ArrowForwardIcon/>
+                            </Button>
+                        </span>
+                    </Tooltip>
                 </Row>
             </form>
         )
