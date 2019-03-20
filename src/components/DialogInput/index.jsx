@@ -6,7 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import Config from '../../assets/config.js'
 export default class FormDialog extends React.Component {
     state = {
         open: true,
@@ -24,7 +24,7 @@ export default class FormDialog extends React.Component {
 
     onSubmit = () => {
         this.handleClose();
-        this.props.handleLocation(this.state.uuid)
+        this.props.handleLocation(Config.url.endpoint + '/' + this.state.uuid)
     }
 
     render() {
