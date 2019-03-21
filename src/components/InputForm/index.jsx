@@ -126,16 +126,18 @@ class InputForm extends React.Component {
     }
 
     handleFileUpload = (f) => {
-        if (f === undefined || f === null){
-            this.setState({snp_level_summary: f,
-                           'disablerunbtn': true,
-                           'runbutntooltip': config.tooltips.run_button_disabled})
+        var disrunbtn = true
+        var runtooltip = config.tooltips.run_button_disabled
+        if (f !== undefined && f !== null &&
+            this.state.ndex !== undefined &&
+            this.state.ndex !== null &&
+            this.state.ndex.length >= 36){
+            disrunbtn = false
+            runtooltip = config.tooltips.run_button_enabled
         }
-        else {
-            this.setState({snp_level_summary: f,
-                'disablerunbtn': false,
-                'runbutntooltip': config.tooltips.run_button_enabled})
-        }
+        this.setState({snp_level_summary: f,
+            'disablerunbtn': disrunbtn,
+            'runbutntooltip': runtooltip})
     }
 
     render(){
