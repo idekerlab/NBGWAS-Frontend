@@ -20,8 +20,8 @@ This is a single page application built on ReactJS, and requires Node and NPM to
 Clone this repository and install the dependencies
 
 ```bash
-git clone http://github.com/brettjsettle/nbgwas-frontend
-cd nbgwas-frontend
+git clone http://github.com/idekerlab/NBGWAS-Frontend
+cd NBGWAS-Frontend
 npm install
 ```
 
@@ -55,7 +55,7 @@ The paper for NAGA is on its way to being published and will be available via li
 
 ## Authors
 
-See the list of [contributors](https://github.com/brettjsettle/nbgwas-frontend/contributors) who participated in this project.
+See the list of [contributors](https://github.com/idekerlab/NBGWAS-Frontend/contributors) who participated in this project.
 
 ## License
 
