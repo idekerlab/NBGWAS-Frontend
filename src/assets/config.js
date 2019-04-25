@@ -2,7 +2,7 @@
 
 const data = {
     title: 'Network Assisted Genomic Analysis',
-    subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' + 
+    subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' +
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
     version: '0.1.4',
     url: {
@@ -32,6 +32,17 @@ const data = {
         name: "hg19",
         path: "hg19",
         description: ""
+    },
+    {
+      name: "rn6",
+      path: "rn6",
+      description: ""
+
+    },
+    {
+      name: "mm10",
+      path: "mm10",
+      description: ""
     }],
     tooltips: {
         run_button_disabled: "'Network UUID in NDEx' field and 'UPLOAD GWAS SUMMARY STATISTICS' must be set to run NAGA processing",
@@ -60,8 +71,8 @@ const data = {
         negativelog: 'Gene Input Heat',
         finalheat: 'Final Heat'
     },
-    
-    
+
+
 }
 
 export default data;
