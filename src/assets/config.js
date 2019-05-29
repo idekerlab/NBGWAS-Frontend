@@ -2,7 +2,7 @@
 
 const data = {
     title: 'Network Assisted Genomic Analysis',
-    subheader: 'The network-boosted GWAS package re-prioritizes significant single nucleotide polymorphisms ' +
+    subheader: 'Network Assisted Genomic Analysis re-prioritizes significant single nucleotide polymorphisms ' +
         '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
     version: '0.1.5',
     url: {
@@ -13,6 +13,7 @@ const data = {
         data: '/nagadata',
         endpoint: "/rest/v1/snp_analyzer",
         ndex_query: 'http://www.ndexbio.org/v2/search/network/{networkid}/interconnectquery?save=false',
+        ndex_link: 'http://www.ndexbio.org',
         // publication: "/", // ADD link to publication to generate a link in the app
     },
     defaults: {
@@ -44,18 +45,30 @@ const data = {
       path: "mm10",
       description: ""
     }],
+    networks: [{
+      name: "Human PCNet",
+      path: "f93f402c-86d4-11e7-a10d-0ac135e8bacf",
+      description: ""
+    },
+  {
+    name: "Rat PCNet",
+    path: "acb87f15-678e-11e9-848d-0ac135e8bacf",
+    description: ""
+  }],
     tooltips: {
-        run_button_disabled: "'Network UUID in NDEx' field and 'UPLOAD GWAS SUMMARY STATISTICS' must be set to run NAGA processing",
+        run_button_disabled: "'UUID in NDEx' field and 'UPLOAD GWAS SUMMARY STATISTICS' must be set to run NAGA processing",
         run_button_enabled: "Runs NAGA processing"
     },
     text: {
         snp_level_summary: 'Upload GWAS Summary Statistics',
-        ndex: 'Network UUID in NDEx',
+        ndex_dropdown: 'Select Network',
+        ndex: 'UUID in NDEx',
         alpha: 'Restart Probability (Leave blank to auto-generate)',
         window: 'Window Size',
-        protein_coding: 'Genome for Protein Coding Region',
+        protein_coding: 'Genome build',
         run: 'Run',
         view_previous: 'View previous result by task ID',
+        ndex_placeholder: "Select network or input a NDEx network UUID"
     },
     help: {
         snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the following names: chromosome, basepair, pvalue',
@@ -63,7 +76,7 @@ const data = {
             'probability of walking to network neighbors as opposed to reseting to the original distribution. Larger ' +
             'values increases the likelihood of starting with the original distribution again. ',
         window: 'Window search size in base pairs used in snp search',
-        protein_coding: 'Sets which protein coding table to use data relatedto NCBI human genome build hg18 or hg19',
+        protein_coding: 'Set genome reference to map SNPs to protein coding regions',
     },
     sample_ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
     topN: 25,

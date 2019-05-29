@@ -1,21 +1,20 @@
 import React from 'react'
 import { TextField, FormControl, Select, MenuItem, InputLabel,
-    Button, CardHeader, FormHelperText, LinearProgress } from '@material-ui/core';
+    Button, CardHeader, FormHelperText, LinearProgress} from '@material-ui/core';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import Tooltip from '@material-ui/core/Tooltip';
-
 import axios from 'axios'
-
 import Row from './Row'
 import AdvancedPanel from './AdvancedPanel'
 import FileUpload from './FileUpload'
+
 
 import config from '../../assets/config'
 import './style.css'
 
 /**
  * author: Brett Settle
- * 
+ *
  * InputForm component for entering parameters to be passed to NAGA REST API
  * Results must be submitted as a form. Once a request is submitted, the task ID
  * is propagated up to the parent container, and the tab is switched to Results
@@ -65,7 +64,7 @@ class InputForm extends React.Component {
                 throw new Error("No SNP Level Summary provided.")
             }
             formData.append('snp_level_summary', snp)
-            
+
             const ndex = formData.get('ndex')
             if (ndex.length !== 36) {
                 throw new Error("NDEx UUID is invalid")
@@ -90,13 +89,13 @@ class InputForm extends React.Component {
 
     onSubmit = (event) => {
         event.preventDefault();
-        
+
         const formData = new FormData(event.target);
         const valid_data = this.validate(formData);
         if (valid_data === null){
             return;
         }
-        this.handleSubmit(valid_data)        
+        this.handleSubmit(valid_data)
     }
 
     handleSubmit = (formData) => {
@@ -106,7 +105,7 @@ class InputForm extends React.Component {
                 this.setState({ running: true, complete: percentCompleted })
             }
         }
-        
+
         axios.post(config.url.endpoint, formData, callbacks)
             .then(res => {
                 if (res['data'] === 'failed') {
@@ -140,6 +139,7 @@ class InputForm extends React.Component {
             'runbutntooltip': runtooltip})
     }
 
+
     render(){
         const {
             ndex,
@@ -158,15 +158,9 @@ class InputForm extends React.Component {
         const subheader = <div className='subheader'>
             <p>{config.subheader}</p>
             <p>To generate the sample results{pubLink}, use this provided <a href={config.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
-            Use the sample NDEx network, and set the protein coding to hg18.</p>
+            Select Human PCNet as network, and set the genome build to hg18.</p>
+            <p>For more networks, please visit <a href={config.url.ndex_link}> NDEx</a>.</p>
         </div>
-
-        const ndex_help = <span>
-            The UUID of the reference network on <a href="http://www.ndexbio.org">NDEx</a>. For example, to use the Parsimonious Composite Network (PCNet), one would use this: <a href="/" onClick={(event) => {
-               event.preventDefault();
-                this.setState({ ndex: config.sample_ndex})
-            }}>{config.sample_ndex}</a>
-        </span>
 
         if (running === true){
             return (<div>
@@ -181,7 +175,7 @@ class InputForm extends React.Component {
                     className='header'
                     title={config.title}
                     subheader={subheader}/>
-                <FileUpload 
+                <FileUpload
                     sampleURL={config.url.sample_file}
                     text={config.text.snp_level_summary}
                     help={config.help.snp_level_summary}
@@ -189,16 +183,34 @@ class InputForm extends React.Component {
                     name="snp_level_summary"
                     value={snp_level_summary}
                 />
+
                 <Row>
                     <TextField
+                        select
                         name="ndex"
-                        label={config.text.ndex}
-                        helperText={ndex_help}
                         value={ndex}
+                        style={{width: '20%'}}
+                        label={config.text.ndex_dropdown}
+                        margin="normal"
+                        onChange={this.handleChange}>
+                        {config.networks.map((a, b) => {
+                            return <MenuItem key={b} value={a.path}>{a.name}</MenuItem>
+                        })}
+                    </TextField>
+
+                    <TextField
+                        name="ndex"
+                        value={ndex}
+                        InputLabelProps={{ shrink: true}}
+                        style={{width: '80%'}}
+                        label={config.text.ndex}
+                        placeholder={config.text.ndex_placeholder}
+                        margin="normal"
                         onChange={this.handleChange}
-                        fullWidth
                     />
+
                 </Row>
+
                 <Row>
                     <FormControl fullWidth>
                         <InputLabel htmlFor="protein_coding">{config.text.protein_coding}</InputLabel>
@@ -209,26 +221,27 @@ class InputForm extends React.Component {
                             {config.protein_codings.map((a, b) => {
                                 return <MenuItem key={b} value={a.path}>{a.name}</MenuItem>
                             })}
+
                         </Select>
                         <FormHelperText>{config.help.protein_coding}</FormHelperText>
                     </FormControl>
                 </Row>
                 <Row>
-                    <AdvancedPanel 
+                    <AdvancedPanel
                         window={window}
                         alpha={alpha}
                         handleChange={this.handleChange}
                     />
-                </Row> 
+                </Row>
                 <Row>
                     <p className='button-bar-text'>
                         <a href="/" onClick={this.runSample}>Example output</a> (schizophrenia on hg18)
                     </p>
                     <Tooltip title={runbutntooltip} placement='left-start'>
                         <span className='run-button-tooltip'>
-                            <Button 
+                            <Button
                                 color="primary"
-                                variant="contained" 
+                                variant="contained"
                                 className='run-button'
                                 disabled={disablerunbtn}
                                 type="submit"
