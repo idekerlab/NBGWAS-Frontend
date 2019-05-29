@@ -36,20 +36,36 @@ class InputForm extends React.Component {
     handleChange = event => {
         var disablerunbtn = true
         var runbutntooltip = config.tooltips.run_button_disabled
+        var ndexval = this.state.ndex
         if (event.target.name === 'ndex'){
-            if (event.target.value !== undefined && event.target.value !== null &&
-                event.target.value.length >= 36){
-                if (this.state.snp_level_summary !== undefined &&
-                    this.state.snp_level_summary !== null){
-                        disablerunbtn = false
-                        runbutntooltip = config.tooltips.run_button_enabled
-                }
-            }
-
+            ndexval = event.target.value
         }
+        if (ndexval !== undefined && ndexval !== null &&
+            ndexval.length >= 36){
+            if (this.state.snp_level_summary !== undefined &&
+                this.state.snp_level_summary !== null){
+                    disablerunbtn = false
+                    runbutntooltip = config.tooltips.run_button_enabled
+            }
+        }
+
         this.setState({[event.target.name]: event.target.value,
-                       'disablerunbtn': disablerunbtn,
-                       'runbutntooltip': runbutntooltip})
+                      'disablerunbtn': disablerunbtn,
+                      'runbutntooltip': runbutntooltip})
+    }
+
+    handleClick = event => {
+        event.preventDefault();
+        var disablerunbtn = true
+        var runbutntooltip = config.tooltips.run_button_disabled
+        if (this.state.snp_level_summary !== undefined &&
+            this.state.snp_level_summary !== null){
+                disablerunbtn = false
+                runbutntooltip = config.tooltips.run_button_enabled
+        }
+        this.setState({ ndex: config.sample_ndex,
+                        'disablerunbtn': disablerunbtn,
+                        'runbutntooltip': runbutntooltip})
     }
 
     runSample = (event) => {
