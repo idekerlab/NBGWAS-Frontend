@@ -53,6 +53,9 @@ class InputForm extends React.Component {
                       'disablerunbtn': disablerunbtn,
                       'runbutntooltip': runbutntooltip})
     }
+    handleSwitch = event =>{
+      this.setState({ size_adjustment: event.target.checked })
+    }
 
     handleClick = event => {
         event.preventDefault();
@@ -163,6 +166,7 @@ class InputForm extends React.Component {
             protein_coding,
             window,
             alpha,
+            size_adjustment,
             complete,
             running,
             disablerunbtn,

@@ -21,27 +21,29 @@ const data = {
         snp_level_summary: null,
         protein_coding: 'hg18',
         alpha: '',
-        window: 10000
+        window: 10000,
+        size_adjustment: false
+
     },
     // Add protein coding files here.
     protein_codings: [{
-        name: "hg18",
+        name: "Human - hg18",
         path: "hg18",
         description: ""
     },
     {
-        name: "hg19",
+        name: "Human - hg19",
         path: "hg19",
         description: ""
     },
     {
-      name: "rn6",
+      name: "Rat - rn6",
       path: "rn6",
       description: ""
 
     },
     {
-      name: "mm10",
+      name: "Mouse - mm10",
       path: "mm10",
       description: ""
     }],
@@ -53,6 +55,11 @@ const data = {
   {
     name: "Rat PCNet",
     path: "acb87f15-678e-11e9-848d-0ac135e8bacf",
+    description: ""
+  },
+  {
+    name: "Mouse PCNet",
+    path: "5565aa25-3c5a-11e9-9f06-0ac135e8bacf",
     description: ""
   }],
     tooltips: {
@@ -68,7 +75,8 @@ const data = {
         protein_coding: 'Genome build',
         run: 'Run',
         view_previous: 'View previous result by task ID',
-        ndex_placeholder: "Select network or input a NDEx network UUID"
+        ndex_placeholder: "Select network or input a NDEx network UUID",
+        size_adjustment: 'Adjustment to gene size'
     },
     help: {
         snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the following names: chromosome, basepair, pvalue',
@@ -77,6 +85,7 @@ const data = {
             'values increases the likelihood of starting with the original distribution again. ',
         window: 'Window search size in base pairs used in snp search',
         protein_coding: 'Set genome reference to map SNPs to protein coding regions',
+        size_adjustment: 'Adjust initial heat to gene size'
     },
     sample_ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
     topN: 25,

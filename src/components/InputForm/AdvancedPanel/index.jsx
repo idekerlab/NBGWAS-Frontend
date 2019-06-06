@@ -1,6 +1,8 @@
 import React from 'react'
 import {TextField, ExpansionPanel, ExpansionPanelSummary, Typography} from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Switch from '@material-ui/core/Switch'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Row from '../Row'
 import config from '../../../assets/config'
 import './style.css'
@@ -37,6 +39,20 @@ const AdvancedPanel = (props) => {
                         fullWidth
                     />
                 </Row>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={props.size_adjustment}
+                      onChange={props.handleSwitch}
+                      color="primary"
+                    />
+                  }
+                  label="Enable Size Adjustment"
+                  labelPlacement="start"
+                />
+
+
             </div>
       </ExpansionPanel >
     )
