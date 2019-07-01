@@ -46,20 +46,30 @@ const data = {
       name: "Mouse - mm10",
       path: "mm10",
       description: ""
+    },
+    {
+      name: "Fruit Fly - dm6",
+      path: "dm6",
+      description: ""
     }],
     networks: [{
       name: "Human PCNet",
-      path: "f93f402c-86d4-11e7-a10d-0ac135e8bacf",
+      path: "4de852d9-9908-11e9-bcaf-0ac135e8bacf",
       description: ""
     },
   {
     name: "Rat PCNet",
-    path: "acb87f15-678e-11e9-848d-0ac135e8bacf",
+    path: "90c7d2cc-990d-11e9-bcaf-0ac135e8bacf",
     description: ""
   },
   {
     name: "Mouse PCNet",
-    path: "5565aa25-3c5a-11e9-9f06-0ac135e8bacf",
+    path: "910589f7-990b-11e9-bcaf-0ac135e8bacf",
+    description: ""
+  },
+  {
+    name: "Fruit Fly STRING",
+    path: "3e55390b-9a04-11e9-be49-0ac135e8bacf",
     description: ""
   }],
     tooltips: {
@@ -87,7 +97,7 @@ const data = {
         protein_coding: 'Set genome reference to map SNPs to protein coding regions',
         size_adjustment: 'Adjust initial heat to gene size'
     },
-    sample_ndex: 'f93f402c-86d4-11e7-a10d-0ac135e8bacf',
+    sample_ndex: '4de852d9-9908-11e9-bcaf-0ac135e8bacf',
     topN: 25,
     columns: {
         negativelog: 'Gene Input Heat',
