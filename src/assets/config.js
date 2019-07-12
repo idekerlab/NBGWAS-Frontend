@@ -3,7 +3,7 @@
 const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'Network Assisted Genomic Analysis re-prioritizes significant single nucleotide polymorphisms ' +
-        '(SNPs) to genes using network diffusion methods including random walk and heat diffusion.',
+        '(SNPs) to genes using random walk with restart algorithm.',
     version: '0.1.6',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
@@ -53,7 +53,12 @@ const data = {
       description: ""
     }],
     networks: [{
-      name: "Human PCNet",
+      name: "Original Human PCNet",
+      path: "f93f402c-86d4-11e7-a10d-0ac135e8bacf",
+      description: ""
+    },
+  {
+      name: "Updated Human PCNet",
       path: "4de852d9-9908-11e9-bcaf-0ac135e8bacf",
       description: ""
     },
@@ -89,7 +94,7 @@ const data = {
         size_adjustment: 'Adjustment to gene size'
     },
     help: {
-        snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the following names: chromosome, basepair, pvalue',
+        snp_level_summary: 'Comma delimited file  that includes a header line with columns that have the exact following names: chromosome, basepair, pvalue',
         alpha: 'Sets propagation constant alpha with allowed values between 0 and 1, representing the restart ' +
             'probability of walking to network neighbors as opposed to reseting to the original distribution. Larger ' +
             'values increases the likelihood of starting with the original distribution again. ',

@@ -39,7 +39,7 @@ const AdvancedPanel = (props) => {
                         fullWidth
                     />
                 </Row>
-
+                {/*
                 <FormControlLabel
                   control={
                     <Switch
@@ -51,7 +51,7 @@ const AdvancedPanel = (props) => {
                   label="Enable Size Adjustment"
                   labelPlacement="start"
                 />
-
+                */}
 
             </div>
       </ExpansionPanel >

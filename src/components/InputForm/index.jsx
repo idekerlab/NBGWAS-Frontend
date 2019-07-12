@@ -177,8 +177,10 @@ class InputForm extends React.Component {
 
         const subheader = <div className='subheader'>
             <p>{config.subheader}</p>
+            <p>To cite NAGA: Carlin, Daniel E., Samson H. Fong, Yue Qin, Tongqiu Jia, Justin K. Huang, Bokan Bao, Chao Zhang, and Trey Ideker. "A Fast and Flexible Framework for Network-Assisted Genomic Association." iScience 16 (2019): 155.</p>
             <p>To generate the sample results{pubLink}, use this provided <a href={config.url.sample_file}>example file of schizophrenia GWAS summary statistics</a>.
-            Select Human PCNet as network, and set the genome build to hg18.</p>
+            Select Original Human PCNet as network, and set the genome build to hg18.</p>
+            <p> To cite the example schizophrenia GWAS dataset: Schizophrenia Psychiatric Genome-Wide Association Study (GWAS) Consortium (2011). Genome-wide association study identifies five new schizophrenia loci. Nat. Genet. 43, 969–976.</p>
             <p>For more networks, please visit <a href={config.url.ndex_link}> NDEx</a>.</p>
         </div>
 

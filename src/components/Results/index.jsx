@@ -11,7 +11,7 @@ import './style.css'
 
 
 function downloadAsCsv(columns, data){
-    
+
     var csv = "Name," + columns.join(",") + "\n";
     const lines = data.map(row => {
         const rowInfo = columns.map(name => row[name]);
@@ -27,7 +27,7 @@ function downloadAsCsv(columns, data){
 
 /**
  * author: Brett Settle
- * 
+ *
  * Result Component to get results from a task UUID and display them
  * in a NetworkView and a ResultTable
  */
@@ -73,7 +73,7 @@ class Results extends React.Component {
     handleResponse= response => {
         let result = response["result"];
         let parameters = response["parameters"];
-        
+
         let columns = result['resultkey'];
         let resultvalue = result["resultvalue"];
         let ndex = parameters['ndex'];
@@ -120,9 +120,11 @@ class Results extends React.Component {
                 </div>);
         }
         const id = this.props.location.substring(this.props.location.lastIndexOf("/") + 1);
-        return (data === null ? 
+        return (data === null ?
             <div>
                 <p>Waiting for result (task UUID: '{id}')</p>
+                <p>NAGA tasks are processed in the order in which they were received. </p>
+                <p>If your task is taking more than a few minutes, it may be waiting for other user’s tasks to complete. Thanks for being patient.</p>
                 <LinearProgress />
                 <a href="/" className='back'><BackIcon /></a>
             </div>
@@ -132,12 +134,12 @@ class Results extends React.Component {
                     ndex={ndex}
                     genes={data}
                     />
-                <ResultInfo 
+                <ResultInfo
                     data={data}
                     columns={columns}/>
-                <ButtonBar 
+                <ButtonBar
                     handleDownload={() => downloadAsCsv(columns, data)}
-                    handleBack={this.props.handleBack} />         
+                    handleBack={this.props.handleBack} />
             </div>
         );
     }
@@ -145,7 +147,7 @@ class Results extends React.Component {
 
 const ResultInfo = (props) => {
     const {
-        data, 
+        data,
         columns} = props;
 
     const column_arr = columns.map(name => {
@@ -157,7 +159,7 @@ const ResultInfo = (props) => {
     return (
         <ResultTable
             data={data}
-            columns={column_arr} 
+            columns={column_arr}
             orderBy={config.columns['finalheat']}
           />
     );
