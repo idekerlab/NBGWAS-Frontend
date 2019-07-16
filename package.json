@@ -1,6 +1,6 @@
 {
   "name": "nbgwas-frontend",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.6.1",
@@ -36,11 +36,11 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://nbgwas-stage.ucsd.edu",
+  "proxy": "http://nbgwas.ucsd.edu",
   "homepage": ".",
   "devServer": {
     "proxy": {
-      "/nagadata/**": "http://nbgwas-stage.ucsd.edu"
+      "/nagadata/**": "http://nbgwas.ucsd.edu"
     }
   }
 }
