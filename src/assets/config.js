@@ -4,7 +4,7 @@ const data = {
     title: 'Network Assisted Genomic Analysis',
     subheader: 'Network Assisted Genomic Analysis re-prioritizes significant single nucleotide polymorphisms ' +
         '(SNPs) to genes using random walk with restart algorithm.',
-    version: '0.1.6',
+    version: '0.2.0',
     url: {
         sample_file: '/nagadata/schizophrenia.txt',
         sample_results: '/nagadata/example_output/example_schizophrenia_output.json',
